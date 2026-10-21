@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Temporada Seca · Nueve decisiones</title>
+<style>
+:root{
+  --navy:#1E2761; --navy2:#2E3D8F; --ice:#CADCFC; --gold:#E0A93E; --goldd:#8C6212;
+  --tint:#FBF3E1; --card:#F4F6FC; --ink:#2B2F3A; --gray:#5A6072;
+  --brick:#B5483F; --steel:#50808E; --line:#E3E7F2; --bg:#EEF0F8; --paper:#fff;
+  --lowc:#B5483F; --midc:#E0A93E; --highc:#5B9EC9;
+  --serif:Georgia,'Cambria',serif;
+  --sans:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1224; --paper:#171B33; --card:#1F2440; --tint:#2A2A20; --ink:#E9ECF7; --gray:#AEB4C8;
+    --line:#2F3556; --ice:#CADCFC; --navy:#26307A; --navy2:#3546A8; --goldd:#E8C46A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1224; --paper:#171B33; --card:#1F2440; --tint:#2A2A20; --ink:#E9ECF7; --gray:#AEB4C8;
+  --line:#2F3556; --navy:#26307A; --navy2:#3546A8; --goldd:#E8C46A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.app{max-width:480px;margin:0 auto;min-height:100dvh;background:var(--paper);display:flex;flex-direction:column}
+
+/* ---- score header ---- */
+.scoreboard{position:sticky;top:0;z-index:20;background:#1E2761;color:#fff;padding:.6rem .8rem .55rem;box-shadow:0 2px 10px rgba(20,26,64,.35)}
+.sb-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.45rem}
+.sb-top .t{font-family:var(--serif);font-weight:bold;font-size:.95rem}
+.sb-top .t em{color:var(--gold);font-style:normal}
+.sb-top .stage{font-size:.66rem;color:var(--ice);letter-spacing:.1em;text-transform:uppercase;text-align:right}
+.dims{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem .55rem}
+.dim{font-size:.6rem;color:var(--ice)}
+.dim .bar{height:5px;background:rgba(202,220,252,.25);border-radius:99px;overflow:hidden;margin-top:2px}
+.dim .fill{height:100%;border-radius:99px;background:var(--midc);transition:width .6s ease,background .6s}
+.dim .fill.low{background:var(--lowc)}
+.dim .fill.high{background:var(--highc)}
+.dim .lab{display:flex;justify-content:space-between}
+.dim .lab .v{font-weight:700}
+.dim.warn .lab .v{color:#FFB3AB}
+.dim.top .lab .v{color:#A9D6F5}
+.dots{display:flex;gap:.3rem;justify-content:center;margin-top:.55rem;flex-wrap:wrap}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(202,220,252,.35)}
+.dot.on{background:var(--gold)}
+
+/* ---- screens ---- */
+.screen{padding:1.15rem 1.1rem 2rem;display:none;flex:1}
+.screen.active{display:block;animation:up .35s ease}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:.66rem;font-weight:700;letter-spacing:.18em;color:var(--goldd);text-transform:uppercase;margin-bottom:.45rem}
+h1,h2{font-family:var(--serif);color:var(--navy);line-height:1.2}
+:root[data-theme="dark"] h1,:root[data-theme="dark"] h2{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h1,:root:not([data-theme="light"]) h2{color:#CADCFC}}
+h1{font-size:1.75rem;margin-bottom:.7rem}
+h2{font-size:1.3rem;margin-bottom:.55rem}
+h3{font-family:var(--serif);font-size:1rem;color:var(--navy);margin:.9rem 0 .4rem}
+:root[data-theme="dark"] h3{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h3{color:#CADCFC}}
+p.ctx{font-size:.92rem;color:var(--ink);margin-bottom:.9rem}
+.sesion{background:var(--card);border-left:4px solid var(--gold);border-radius:0 11px 11px 0;padding:.55rem .8rem;font-size:.8rem;color:var(--gray);margin-bottom:.8rem}
+.sesion b{color:var(--ink)}
+.notice{background:var(--tint);border-radius:11px;padding:.6rem .8rem;font-size:.8rem;margin-bottom:.55rem;color:var(--goldd)}
+.notice.bad{background:#F9EDEC;color:var(--brick)}
+.notice.crisis{background:#F9EDEC;color:var(--brick);border:1.5px solid var(--brick)}
+.notice.bonus{background:#EAF3F9;color:#2C6C95;border:1.5px solid var(--highc)}
+.notice b{display:block;font-size:.86rem;margin-bottom:.15rem}
+.qcard{background:var(--card);border-radius:14px;padding:1rem;margin-top:.4rem}
+.qcard .q{font-weight:700;font-size:.98rem;color:var(--navy);margin-bottom:.75rem}
+:root[data-theme="dark"] .qcard .q{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .qcard .q{color:#CADCFC}}
+.voices{margin:.2rem 0 .9rem}
+.voice{display:flex;gap:.55rem;margin-bottom:.5rem;font-size:.82rem;align-items:flex-start}
+.voice .who{flex:none;width:6.2rem;font-size:.66rem;font-weight:700;line-height:1.25;padding-top:.15rem;color:var(--gray)}
+.voice .who i{display:block;width:100%;height:3px;border-radius:99px;margin-top:.25rem}
+.voice .say{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:0 12px 12px 12px;padding:.5rem .7rem;font-style:italic;color:var(--ink)}
+.opt{display:block;width:100%;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:.75rem .85rem;margin-bottom:.6rem;transition:border-color .15s,transform .15s}
+.opt:active{transform:scale(.985)}
+.opt:hover{border-color:var(--gold)}
+.cutbox{margin-top:.9rem;border-top:1px dashed var(--line);padding-top:.75rem}
+.cutbox .cut-t{font-weight:700;font-size:.86rem;color:var(--navy)}
+.cutbox .cut-t span{font-weight:400;color:var(--gray);font-size:.76rem}
+.cutbox .cut-d{font-size:.76rem;color:var(--gray);margin:.25rem 0 .55rem;line-height:1.4}
+.cut-chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.cutc{background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:.38rem .7rem;font-size:.78rem;color:var(--ink)}
+.cutc.sel{border-color:var(--brick);background:#F9EDEC;color:var(--brick);font-weight:700}
+.cut-note{font-size:.78rem;color:var(--brick);background:#F9EDEC;border-radius:10px;padding:.5rem .7rem;margin:.2rem 0 .6rem;line-height:1.4}
+:root[data-theme="dark"] .cutbox .cut-t{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cutbox .cut-t{color:#CADCFC}}
+.opt b{display:block;font-size:.9rem;color:var(--ink)}
+.opt small{display:block;font-size:.74rem;color:var(--gray);font-style:italic;margin-top:.15rem}
+.btn{display:block;width:100%;background:#1E2761;color:#fff;border:none;border-radius:12px;padding:.85rem;font-size:.95rem;font-weight:700;margin-top:1rem}
+.btn:hover{background:#2E3D8F}
+.btn.gold{background:var(--gold);color:#1E2761}
+.btn.ghost{background:var(--paper);color:var(--navy);border:1.5px solid var(--line)}
+.idbox{background:var(--card);border-radius:14px;padding:.85rem 1rem;margin:.4rem 0 .9rem}
+.idbox label{display:block;font-size:.78rem;color:var(--gray);margin:.35rem 0 .2rem}
+.idbox input{width:100%;box-sizing:border-box;font:inherit;font-size:.95rem;padding:.55rem .7rem;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+.idbox input:focus{outline:none;border-color:var(--gold)}
+.idbox .idnote{font-size:.74rem;color:var(--gray);margin-top:.4rem}
+.idbox .idwarn{font-size:.78rem;color:var(--brick);margin-top:.4rem;display:none}
+.gate{background:var(--card);border-radius:16px;padding:1.1rem 1rem;margin:.6rem 0}
+.gate input{width:100%;box-sizing:border-box;font:inherit;font-size:1.35rem;letter-spacing:.35em;text-align:center;text-transform:uppercase;padding:.6rem .7rem;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);margin:.6rem 0 .4rem}
+.gate input:focus{outline:none;border-color:var(--gold)}
+.gate .gerr{font-size:.8rem;color:var(--brick);min-height:1.2em;margin:.2rem 0 .4rem}
+.gate .ghint{font-size:.78rem;color:var(--gray)}
+.jump button.locked{opacity:.55}
+.sendstatus{font-size:.76rem;color:var(--gray);text-align:center;margin:.2rem 0 .6rem}
+.sendstatus.ok{color:#2C6C95}
+.sendstatus.err{color:var(--brick)}
+:root[data-theme="dark"] .btn.ghost{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:#CADCFC}}
+.btn.danger{background:var(--brick);color:#fff}
+.jump{display:grid;grid-template-columns:repeat(9,1fr);gap:.3rem;margin-top:.5rem}
+.jump button{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.45rem 0;font-size:.8rem;font-weight:700;color:var(--ink)}
+.jump button:hover{border-color:var(--gold)}
+
+/* ---- feedback ---- */
+.fb-tag{font-size:.64rem;font-weight:700;letter-spacing:.18em;color:var(--goldd)}
+.fb-box{background:var(--tint);border-radius:13px;padding:.9rem 1rem;margin:.6rem 0 .5rem;font-size:.9rem;color:var(--ink)}
+.marco{font-size:.74rem;color:var(--gray);margin-bottom:.9rem}
+.marco b{color:var(--goldd)}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.4rem}
+.chipd{font-size:.72rem;font-weight:700;border-radius:99px;padding:.25rem .65rem}
+.chipd.pos{background:#EAF3F9;color:#2C6C95}
+.chipd.neg{background:#F9EDEC;color:var(--brick)}
+.chosen{font-size:.8rem;color:var(--gray);margin-bottom:.5rem}
+.chosen b{color:var(--ink)}
+
+/* ---- intro / ending ---- */
+.hero{background:#1E2761;color:#fff;border-radius:0 0 22px 22px;padding:1.6rem 1.1rem 1.4rem;margin:-1.15rem -1.1rem 1.1rem}
+.hero .eyebrow{color:var(--gold)}
+.hero h1{color:#fff}
+.hero p{color:var(--ice);font-size:.9rem}
+.dimlist{margin:.9rem 0}
+.dimlist div{display:flex;gap:.55rem;font-size:.85rem;margin-bottom:.45rem;align-items:flex-start}
+.dimlist span.ic{flex:none;width:1.5rem;height:1.5rem;border-radius:7px;background:var(--card);display:grid;place-items:center;font-size:.8rem}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.6rem 0 .9rem}
+.rules div{border-radius:11px;padding:.6rem .7rem;font-size:.78rem}
+.rules .r1{background:#F9EDEC;color:var(--brick)}
+.rules .r2{background:#EAF3F9;color:#2C6C95}
+.rules b{display:block;font-size:1.1rem;font-family:var(--serif)}
+.score-final{background:var(--card);border-radius:14px;padding:1rem;margin:.9rem 0}
+.sf-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;font-size:.78rem}
+.sf-row .nm{width:92px;flex:none;color:var(--gray)}
+.sf-row .bar{flex:1;height:9px;background:var(--line);border-radius:99px;overflow:hidden}
+.sf-row .fill{height:100%;border-radius:99px}
+.sf-row .val{width:30px;text-align:right;font-weight:700;color:var(--navy)}
+:root[data-theme="dark"] .sf-row .val{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sf-row .val{color:#CADCFC}}
+.ending{border-radius:14px;padding:1rem 1.05rem;margin:.7rem 0;font-size:.9rem}
+.ending h2{margin-bottom:.35rem}
+.ending.win{background:var(--tint)}
+.ending.mid{background:var(--card)}
+.ending.bad{background:#F9EDEC;color:#2B2F3A}
+.ending.bad h2{color:var(--brick)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.6rem 0}
+.kpi{background:var(--card);border-radius:12px;padding:.6rem .75rem}
+.kpi span{display:block;font-size:.68rem;color:var(--gray)}
+.kpi b{font-family:var(--serif);font-size:1.35rem;color:var(--navy)}
+:root[data-theme="dark"] .kpi b{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kpi b{color:#CADCFC}}
+.loglist{font-size:.8rem;color:var(--gray);margin:.6rem 0 1rem}
+.loglist li{margin-bottom:.35rem;margin-left:1rem}
+.loglist b{color:var(--ink)}
+.lessons div{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:.6rem .8rem;font-size:.82rem;margin-bottom:.5rem}
+.lessons .ok{background:var(--tint)}
+.lessons .miss{background:var(--card)}
+.small{font-size:.72rem;color:var(--gray);text-align:center;margin-top:1.2rem}
+.qclase{background:var(--paper);border:1.5px dashed var(--gold);border-radius:12px;padding:.7rem .85rem;font-size:.85rem;margin:.8rem 0}
+.qclase ol{margin:.35rem 0 0 1.15rem;padding:0}
+.qclase li{margin:.35rem 0;line-height:1.45}
+.qclase b{display:block;color:var(--goldd);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.25rem}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="scoreboard" id="scoreboard" style="display:none">
+    <div class="sb-top">
+      <span class="t">Temporada <em>Seca</em> · 9 decisiones</span>
+      <span class="stage" id="sb-stage">Etapa 1</span>
+    </div>
+    <div class="dims" id="dims"></div>
+    <div class="dots" id="dots"></div>
+  </div>
+  <div id="screens"></div>
+</div>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN DEL DOCENTE
+   SHEET_ENDPOINT: URL del web app de Google Apps Script (termina en /exec)
+   que recibe los resultados y los escribe en tu Google Sheet.
+   Déjala vacía ('') para jugar sin registro.
+   ENVIAR_POR_ETAPA: true = una fila al cerrar cada sesión (además del final);
+   false = solo al terminar la partida (final, fin de juego o Caribe).
+   GRUPO_FIJO: etiqueta opcional del grupo/sección; si la defines, se usa
+   para todos y el campo «grupo» no se pregunta.
+   CLAVES: clave de acceso por sesión (la sesión 1 está abierta; las que no
+   aparecen aquí también). Cada clave puede escribirse en claro ('A7K2') o
+   como hash ('sha256:…') para que no se lea en el código fuente. Para
+   obtener el hash de una clave nueva: abre el HTML en el navegador,
+   pulsa F12 → Consola y escribe hashKey('LA-CLAVE'). Mayúsculas y
+   minúsculas se tratan igual.
+   CLAVE_MAESTRA: opcional, abre cualquier sesión (para el docente).
+   ===================================================================== */
+const CONFIG = {
+  SHEET_ENDPOINT: 'https://script.google.com/macros/s/AKfycbwwASzz9VUMZ_8iTDTh4d-XlAypk_zZ04OU1-0pEbprgJUec0MRrIwhMZ2IY5Xp2W4h/exec',
+  ENVIAR_POR_ETAPA: true,
+  GRUPO_FIJO: '',
+  CLAVES: {},   /* sin claves: todas las sesiones abiertas */
+  CLAVE_MAESTRA: '',
+};
+
+/* ---- Claves de sesión ---- */
+function sha256hex(str){
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const bytes=new TextEncoder().encode(str), l=bytes.length, padLen=((l+9+63)>>6)<<6, m=new Uint8Array(padLen);
+  m.set(bytes); m[l]=0x80; const dv=new DataView(m.buffer); dv.setUint32(padLen-4, l*8>>>0); dv.setUint32(padLen-8, Math.floor(l*8/4294967296));
+  const rotr=(x,n)=>(x>>>n)|(x<<(32-n)), W=new Uint32Array(64);
+  for(let i=0;i<padLen;i+=64){
+    for(let t=0;t<16;t++) W[t]=dv.getUint32(i+t*4);
+    for(let t=16;t<64;t++){ const s0=rotr(W[t-15],7)^rotr(W[t-15],18)^(W[t-15]>>>3), s1=rotr(W[t-2],17)^rotr(W[t-2],19)^(W[t-2]>>>10); W[t]=(W[t-16]+s0+W[t-7]+s1)>>>0; }
+    let [a,b,c,d,e,f,g,h]=H;
+    for(let t=0;t<64;t++){ const S1=rotr(e,6)^rotr(e,11)^rotr(e,25), ch=(e&f)^(~e&g), T1=(h+S1+ch+K[t]+W[t])>>>0, S0=rotr(a,2)^rotr(a,13)^rotr(a,22), mj=(a&b)^(a&c)^(b&c), T2=(S0+mj)>>>0; h=g;g=f;f=e;e=(d+T1)>>>0;d=c;c=b;b=a;a=(T1+T2)>>>0; }
+    H=[H[0]+a,H[1]+b,H[2]+c,H[3]+d,H[4]+e,H[5]+f,H[6]+g,H[7]+h].map(x=>x>>>0);
+  }
+  return H.map(x=>x.toString(16).padStart(8,'0')).join('');
+}
+const normKey = k => String(k||'').toUpperCase().replace(/\s+/g,'');
+function hashKey(k){ return 'sha256:'+sha256hex(normKey(k)); }
+function keyMatches(stored, input){
+  if(!stored) return true;
+  const s=String(stored);
+  return s.startsWith('sha256:') ? (hashKey(input)===s) : (normKey(s)===normKey(input));
+}
+const UNLOCK_KEY='temporada_seca_unlocked';
+function unlockedSet(){ try{ return new Set(JSON.parse(localStorage.getItem(UNLOCK_KEY)||'[]')); }catch(e){ return new Set(); } }
+function isUnlocked(n){ return !CONFIG.CLAVES || !CONFIG.CLAVES[n] || unlockedSet().has(n); }
+function markUnlocked(n){ const u=unlockedSet(); u.add(n); try{ localStorage.setItem(UNLOCK_KEY, JSON.stringify([...u])); }catch(e){} }
+function checkKey(n, input){
+  if(!normKey(input)) return false;
+  if(CONFIG.CLAVE_MAESTRA && keyMatches(CONFIG.CLAVE_MAESTRA, input)) return true;
+  return keyMatches(CONFIG.CLAVES[n], input);
+}
+
+/* ================= Estado ================= */
+const DIMS = [
+  {k:'eco', n:'Económica',   ic:'₡', d:'Margen, ocupación y caja para invertir.'},
+  {k:'amb', n:'Ambiental',   ic:'≈', d:'Agua, energía y huella real del hotel: lo que puedes demostrar con datos.'},
+  {k:'rep', n:'Reputación',  ic:'★', d:'Lo que se dice del hotel: en el pueblo, en redes y en los rankings.'},
+  {k:'com', n:'Comunidad',   ic:'⌂', d:'Licencia social: la ASADA, los vecinos y los proveedores del pueblo.'},
+  {k:'mot', n:'Equipo',      ic:'♟', d:'Motivación, capacidades y permanencia de tus colaboradores.'},
+  {k:'tur', n:'Huéspedes',   ic:'✈', d:'Satisfacción y reseñas (seis de cada diez vienen de EE. UU.).'},
+  {k:'due', n:'Dueños',      ic:'◆', d:'Confianza de la familia propietaria, que cree en la sostenibilidad y también quiere retornos.'},
+  {k:'bie', n:'Tu bienestar',ic:'❤', d:'Tu energía, tu salud y tu familia.'},
+];
+const NAMES = Object.fromEntries(DIMS.map(d=>[d.k,d.n]));
+const START = {eco:65, amb:55, rep:66, com:58, mot:70, tur:74, due:66, bie:62};
+const NEUTRAL = {eco:64, amb:62, rep:64, com:62, mot:65, tur:68, due:64, bie:62};
+const SAVE_KEY = 'temporada_seca_9_v2';
+let S, FLAGS, LOG, stageIdx, decIdx, CHECK, CHECK_PREV, OVER, CUTS, CUT;
+let PLAYER = {name:'', group:'', partida:'', modo:'completo'};
+const ID_KEY = 'temporada_seca_id';
+const newId = () => Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);
+
+function reset(){
+  S = {...START}; FLAGS = new Set(); LOG = []; stageIdx=0; decIdx=0; CHECK=null; CHECK_PREV=null; OVER=null; CUTS={mant:0,pers:0,mkt:0,amb:0}; CUT=null; PLAYER.partida=newId(); PLAYER.modo='completo';
+}
+const totalCuts = () => Object.values(CUTS).reduce((a,b)=>a+b,0);
+const has = f => FLAGS.has(f);
+
+/* ---- Personajes ---- */
+const ROLES = {
+  sos:{n:'Valeria · Sostenibilidad', c:'#3E9C8C'},
+  mkt:{n:'Rodrigo · Mercadeo', c:'#637EBF'},
+  rh: {n:'Marcela · Recursos Humanos', c:'#D65894'},
+  fin:{n:'Esteban · Finanzas', c:'#3B666F'},
+  due:{n:'Doña Elena y don Rafael · Dueños', c:'#E0A93E'},
+  ext:{n:'Afuera del hotel', c:'#50808E'},
+  fam:{n:'En casa', c:'#B5483F'},
+};
+
+/* ================= Crisis (< 50) y dividendos (≥ 80) ================= */
+const CRISIS = {
+  eco:{t:'Caja en rojo', d:'El banco congela la línea de crédito y los proveedores exigen pago de contado. Esteban te entrega un plan de pagos que no cierra.', e:{mot:-4,bie:-5,due:-4}},
+  amb:{t:'Expediente abierto', d:'La auditoría del CST te baja de nivel y el MINAE pide un informe del pozo. El hotel «sostenible» no puede demostrarlo con datos.', e:{rep:-6,eco:-4,due:-3}},
+  rep:{t:'Crisis de reputación', d:'Un hilo viral —«el hotel verde de mentira»— acumula miles de comentarios. Llueven cancelaciones y una agencia de EE. UU. pausa el contrato.', e:{tur:-7,eco:-6,bie:-3}},
+  com:{t:'Protesta en la entrada', d:'Vecinos con pancartas —«El agua es del pueblo»— bloquean el acceso dos mañanas seguidas. Un huésped lo transmite en vivo.', e:{tur:-6,rep:-6,bie:-4,mot:-2}},
+  mot:{t:'Renuncias', d:'El chef y dos recepcionistas se van al hotel de al lado, con mejor horario. Valeria te avisa que está «considerando opciones».', e:{tur:-5,eco:-4,amb:-3,bie:-3}},
+  tur:{t:'Reseñas de dos estrellas', d:'La OTA baja tu posicionamiento; tres agencias piden descuentos para no cancelar.', e:{eco:-7,rep:-4,due:-3}},
+  due:{t:'Los dueños intervienen', d:'La familia contrata un consultor externo que te pasa por encima y revisa cada decisión. Las reuniones se duplican.', e:{mot:-4,bie:-6}},
+  bie:{t:'Burnout', d:'El médico te ordena diez días de reposo. No es negociable.',
+       fn:()=>has('guardianes')?{e:{bie:+8,mot:+2},x:'El hotel funcionó sin ti: lo habías entrenado para eso. Volviste con energía.'}
+                               :{e:{bie:+5,tur:-5,mot:-4,eco:-3},x:'Nadie más sabía decidir. El hotel improvisó diez días y se notó.'}},
+};
+const BONUS = {
+  eco:{t:'Holgura financiera', d:'El banco te ofrece una línea verde preferente y los dueños te dan margen para invertir a largo plazo.', e:{amb:+2,bie:+2,due:+2}},
+  amb:{t:'CST nivel élite', d:'La certificación sube de nivel y el hotel entra en la lista de turismo regenerativo del ICT.', e:{rep:+3,eco:+3}},
+  rep:{t:'Prensa internacional', d:'Una revista de viajes te nombra referente de turismo regenerativo en Centroamérica.', e:{tur:+3,eco:+3}},
+  com:{t:'El pueblo te defiende', d:'La ASADA te da prioridad de suministro y los vecinos recomiendan el hotel a sus propios visitantes.', e:{amb:+2,rep:+2}},
+  mot:{t:'El equipo innova', d:'Sin que lo pidas, el equipo propone tres productos nuevos y dos ahorros medibles.', e:{eco:+3,tur:+2}},
+  tur:{t:'Tarifa premium', d:'Ocupación y tarifa suben a la vez: los huéspedes repiten y recomiendan.', e:{eco:+4,rep:+2}},
+  due:{t:'Mandato pleno', d:'Los dueños te delegan la estrategia y respaldan las inversiones de largo plazo sin discutir cada línea.', e:{eco:+2,bie:+2}},
+  bie:{t:'Claridad', d:'Decides con calma y la calma se contagia al equipo.', e:{mot:+2,rep:+2}},
+};
+const OVERS = {
+  quiebra:{t:'El hotel quiebra', d:'La caja no aguanta: el banco ejecuta la garantía y los dueños venden a una cadena internacional que llena la piscina con pipas y despide a medio pueblo. La sequía y el diésel no fueron la causa; fueron el revelador de un sistema sin holgura.'},
+  clausura:{t:'Clausura del pozo', d:'El MINAE cierra el pozo por sobreexplotación y el CST retira la certificación. Sin agua ni sello, el hotel no puede operar la temporada.'},
+  marca:{t:'Marca cancelada', d:'OTAs, agencias y tour operadores retiran el hotel de sus catálogos. Sin canal de venta, la temporada se evapora.'},
+  bloqueo:{t:'Bloqueo comunitario', d:'La ASADA corta el suministro al hotel y la comunidad bloquea el acceso. El ICT suspende la operación hasta que se resuelva el conflicto.'},
+  renuncia:{t:'Renuncia masiva', d:'El chef, la gerente de sostenibilidad y doce colaboradores se van la misma semana. No hay quien atienda a los huéspedes que sí llegaron.'},
+  vacio:{t:'Hotel vacío', d:'Las cancelaciones superan las llegadas. Con 30% de ocupación en temporada alta, los dueños cierran hasta nuevo aviso.'},
+  despido:{t:'Los dueños te reemplazan', d:'La familia perdió la confianza: contratan una gerencia externa «con experiencia en crisis». Tu estrategia queda en un cajón.'},
+  colapso:{t:'Colapso personal', d:'Licencia médica prolongada. Los dueños nombran una gerencia interina y tu familia respira por primera vez en meses. El hotel siguió; tú no pudiste.'},
+  sistemico:{t:'Colapso sistémico', d:'Demasiados frentes bajo 50 al mismo tiempo: caja, gente, comunidad y marca se contagian entre sí. El sistema deja de responder a cualquier decisión.'},
+};
+
+/* ================= Recorte de gasto (palanca disponible en cada decisión) ================= */
+const CUTAREAS = {
+  mant:{n:'Mantenimiento', e:{amb:-1,tur:-1}, r:'El ahorro entra hoy; la reparación que no hiciste tiene fecha, aunque todavía no la conozcas.'},
+  pers:{n:'Personal',      e:{mot:-2,bie:-1}, r:'Las horas recortadas se ven en la planilla; el cansancio y la salida de gente, en la próxima temporada.'},
+  mkt: {n:'Mercadeo',      e:{rep:-1,tur:-1}, r:'Lo que dejas de invertir en canal no se nota este mes; se nota cuando el operador llena sus cupos con otro hotel.'},
+  amb: {n:'Programa ambiental', e:{amb:-2,due:-1}, r:'Sin medición ni proyectos, el hotel «sostenible» pierde la evidencia que lo distingue; los dueños lo notan primero.'},
+};
+const CUT_GAIN = [3,3,2,1,1,0];   /* ahorro económico según cuántas veces ya recortaste esa área; luego no queda qué recortar */
+const CUT_MULT = n => 1+Math.floor(n/3);   /* el daño colateral crece con la repetición */
+const CUT_EVENTS = {
+  mant:[{at:3,t:'La factura del mantenimiento pospuesto',d:'La bomba del pozo y dos aires fallaron en plena ocupación; la reparación de emergencia costó el triple que el mantenimiento que no hiciste.',e:{eco:-4,tur:-4,amb:-2}},
+        {at:6,t:'Sin repuestos',d:'El generador y la caldera quedaron parados una semana esperando piezas. El ahorro de tres meses se fue en una.',e:{eco:-5,tur:-3,amb:-3,due:-2}},
+        {at:9,t:'Cierre parcial por seguridad',d:'El ingeniero municipal clausuró el ala sur: instalación eléctrica sin mantenimiento y una fuga que nadie reparó. Diez habitaciones fuera de venta.',e:{eco:-8,tur:-6,amb:-3,rep:-3}}],
+  pers:[{at:3,t:'Renuncias por el recorte',d:'Tres personas entrenadas se fueron al hotel de al lado, que paga las horas que tú recortaste. Reemplazarlas cuesta más que retenerlas.',e:{mot:-4,tur:-3,com:-2,eco:-2}},
+        {at:6,t:'Servicio bajo mínimos',d:'Los turnos ya no cubren la ocupación: reseñas por lentitud y errores, y tú cubriendo huecos de noche.',e:{mot:-5,tur:-4,eco:-3,bie:-3}},
+        {at:9,t:'Denuncia laboral',d:'El Ministerio de Trabajo llegó por una denuncia de horas sin pagar; el pueblo lo supo antes que tú.',e:{mot:-6,com:-5,rep:-4,eco:-4,bie:-3}}],
+  mkt: [{at:3,t:'Invisibles en temporada baja',d:'Sin presencia en canales, las reservas de temporada baja cayeron y las OTAs bajaron tu posición.',e:{eco:-4,tur:-2,rep:-2}},
+        {at:6,t:'La competencia ocupó tu lugar',d:'Los operadores llenaron sus cupos con el hotel vecino, que sí invirtió en canal.',e:{eco:-5,rep:-3,due:-2}},
+        {at:9,t:'Fuera del mapa',d:'Sin canal, sin contenido y sin relación con agencias, la próxima temporada arranca con la mitad de las reservas.',e:{eco:-8,tur:-4,rep:-3,due:-3}}],
+  amb: [{at:3,t:'El programa ambiental sin presupuesto',d:'El auditor del CST encontró el programa de agua sin registros ni mediciones del trimestre: bajó el nivel de certificación.',e:{amb:-4,rep:-3,due:-2}},
+        {at:6,t:'KPI incumplido',d:'Sin medición ni proyectos, el KPI ambiental comprometido con el banco y el CST no se cumple; la tasa preferente peligra.',e:{amb:-5,rep:-3,eco:-4}},
+        {at:9,t:'Hotel «sostenible» sin evidencia',d:'El CST retira el sello y el banco reclasifica el crédito: el hotel ya no puede demostrar nada de lo que promete.',e:{amb:-8,rep:-5,due:-5,eco:-4}}],
+};
+const CUT_FATIGUE = [{at:8,t:'Fatiga de austeridad',d:'El equipo lee que la única prioridad es la caja: la encuesta de clima lo dice con todas las letras, y los dueños preguntan qué pasó con el hotel «sostenible».',e:{mot:-3,due:-2}},
+  {at:14,t:'Reputación de tacaño',d:'Los proveedores cobran por adelantado, los operadores piden garantías y el pueblo tiene un apodo para el hotel. Recortar dejó de ser una decisión y se volvió tu marca.',e:{rep:-4,tur:-3,com:-3,mot:-2}}];
+
+/* ================= Motor ================= */
+const screens = document.getElementById('screens');
+const dimsEl = document.getElementById('dims');
+const dotsEl = document.getElementById('dots');
+
+function apply(e){
+  const d={};
+  for(const k in e){ if(!(k in S)) continue; const before=S[k]; S[k]=Math.max(0,Math.min(100,S[k]+e[k])); d[k]=S[k]-before; }
+  return d;
+}
+function merge(a,b){ for(const k in b) a[k]=(a[k]||0)+b[k]; return a; }
+function renderBoard(label){
+  document.getElementById('scoreboard').style.display='block';
+  document.getElementById('sb-stage').textContent=label;
+  dimsEl.innerHTML=DIMS.map(d=>{
+    const v=S[d.k];
+    const cls=v<50?'low':(v>=80?'high':'');
+    return `<div class="dim ${v<50?'warn':(v>=80?'top':'')}"><span class="lab"><span>${d.n}</span><span class="v">${v}</span></span><div class="bar"><div class="fill ${cls}" style="width:${v}%"></div></div></div>`;
+  }).join('');
+  dotsEl.innerHTML=[0,1,2,3,4,5,6,7,8].map(i=>`<div class="dot ${i<=stageIdx?'on':''}"></div>`).join('');
+}
+function screen(html){
+  screens.innerHTML=`<div class="screen active">${html}</div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function chipsHtml(d){
+  const ks=Object.keys(d).filter(k=>d[k]!==0);
+  if(!ks.length) return '<div class="chips"><span class="chipd pos">Sin cambios en el tablero</span></div>';
+  return '<div class="chips">'+ks.map(k=>`<span class="chipd ${d[k]>0?'pos':'neg'}">${d[k]>0?'+':''}${d[k]} ${NAMES[k]}</span>`).join('')+'</div>';
+}
+function voicesHtml(v){
+  if(!v||!v.length) return '';
+  return '<div class="voices">'+v.map(x=>{
+    const r=ROLES[x.w]||ROLES.ext; const who=x.who||r.n;
+    return `<div class="voice"><span class="who">${who}<i style="background:${r.c}"></i></span><span class="say">«${x.t}»</span></div>`;
+  }).join('')+'</div>';
+}
+function stageLabel(st){ return 'Etapa '+st.n+' · Sesión '+st.n; }
+
+/* ---- Persistencia (solo en este dispositivo) ---- */
+function save(phase){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({S, F:[...FLAGS], LOG, si:stageIdx, di:decIdx, phase, CHECK, CHECK_PREV, CUTS, PLAYER}));
+  }catch(e){}
+}
+function load(){
+  try{ const raw=localStorage.getItem(SAVE_KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; }
+}
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY);}catch(e){} }
+function saveIdentity(){ try{ localStorage.setItem(ID_KEY, JSON.stringify({name:PLAYER.name, group:PLAYER.group})); }catch(e){} }
+function loadIdentity(){ try{ const r=localStorage.getItem(ID_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
+
+/* ---- Registro de resultados en Google Sheet (vía Apps Script) ---- */
+function resultRow(evento){
+  const st=STAGES[Math.min(stageIdx,STAGES.length-1)];
+  const v=(OVER?null:(typeof verdict==='function'?verdict():null));
+  return {
+    ts:new Date().toISOString(), partida:PLAYER.partida, jugador:PLAYER.name, grupo:PLAYER.group, modo:PLAYER.modo,
+    evento, sesion:st.n,
+    eco:S.eco, amb:S.amb, rep:S.rep, com:S.com, mot:S.mot, tur:S.tur, due:S.due, bie:S.bie,
+    promedio:avg(),
+    veredicto: OVER ? ('Fin de juego: '+OVERS[OVER].t) : (evento==='final'&&v ? v.t : (evento==='caribe' ? 'Final alternativo: Caribe' : '')),
+    recortes: totalCuts(),
+    recortes_area: Object.keys(CUTS).filter(k=>CUTS[k]).map(k=>CUTAREAS[k].n+' ×'+CUTS[k]).join('; '),
+    decisiones: LOG.map(l=>l.et.replace('Sesión ','S')+': '+l.l+(l.cut?' [recorte: '+l.cut+']':'')).join(' | '),
+    banderas: [...FLAGS].filter(f=>!f.startsWith('cr_')&&!f.startsWith('bo_')&&!f.startsWith('cut_')).join(', '),
+    url: (typeof location!=='undefined'?location.href:'')
+  };
+}
+function setSendStatus(cls, txt){ const el=document.getElementById('sendstatus'); if(el){ el.className='sendstatus '+cls; el.textContent=txt; } }
+function sendRow(evento){
+  if(!CONFIG.SHEET_ENDPOINT) return;
+  const row=resultRow(evento);
+  const body=JSON.stringify(row);
+  const fallback=()=>{ try{
+      const f=document.createElement('form'); f.method='POST'; f.action=CONFIG.SHEET_ENDPOINT; f.target='sheet_sink'; f.style.display='none';
+      const i=document.createElement('input'); i.type='hidden'; i.name='payload'; i.value=body; f.appendChild(i);
+      let fr=document.getElementById('sheet_sink'); if(!fr){ fr=document.createElement('iframe'); fr.name='sheet_sink'; fr.id='sheet_sink'; fr.style.display='none'; document.body.appendChild(fr); }
+      document.body.appendChild(f); f.submit(); setTimeout(()=>f.remove(),4000); setSendStatus('ok','Resultados enviados al registro del curso.');
+    }catch(e){ setSendStatus('err','No se pudo enviar el registro: copia tu resumen y envíalo al docente.'); } };
+  setSendStatus('', 'Enviando resultados…');
+  try{
+    fetch(CONFIG.SHEET_ENDPOINT, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain;charset=utf-8'}, body})
+      .then(()=>setSendStatus('ok','Resultados enviados al registro del curso.'))
+      .catch(fallback);
+  }catch(e){ fallback(); }
+}
+function snapshot(){ return {S:{...S}, F:[...FLAGS], LOG:[...LOG], si:stageIdx, CUTS:{...CUTS}}; }
+function restore(c){ S={...c.S}; FLAGS=new Set(c.F); LOG=[...c.LOG]; stageIdx=c.si; decIdx=0; OVER=null; CUTS=c.CUTS?{...c.CUTS}:{mant:0,pers:0,mkt:0,amb:0}; CUT=null; }
+
+/* ================= Contenido: nueve etapas, nueve sesiones ================= */
+const STAGES = [
+/* ---------- ETAPA 1 · Sesión 1 ---------- */
+{n:1, mes:'Septiembre', t:'Dos tormentas en el mismo horizonte',
+ ses:'La sostenibilidad como estrategia', marco:'De la RSE al valor compartido en un mundo BANI (Porter & Kramer; Cascio; Edmans).',
+ ctx:'El IMN confirma un El Niño fuerte para la temporada seca (diciembre–abril). En paralelo, una crisis geopolítica dispara el precio del diésel un 35% en tres meses: las aerolíneas anuncian recargos, los tour operadores suben tarifas y el ICE advierte que, con menos lluvia, generará con búnker y las tarifas eléctricas subirán. Tienes 90% de ocupación reservada para diciembre. Los dueños convocan a junta.',
+ evs:()=>[],
+ dec:[
+  {q:'En la junta, los dueños preguntan qué vas a hacer con «el tema de sostenibilidad» frente a las dos crisis.',
+   v:[{w:'due',t:'Fundamos este hotel para demostrar que se puede. Hagamos algo grande: donemos agua al pueblo y anunciemos que seremos carbono neutral.'},
+      {w:'fin',t:'Con el diésel así, cada dólar cuenta. Sostenibilidad sí, pero después de proteger la caja de diciembre.'},
+      {w:'sos',t:'Esto no es un programa aparte: agua y energía son nuestro modelo de negocio. Necesitamos mapear el sistema antes de gastar un colón.'},
+      {w:'mkt',t:'Lo que sea que hagamos, hay que contarlo ya. La competencia está callada; es nuestra ventana.'}],
+   opts:[
+    {l:'Programa de RSE: donar agua a la comunidad y lanzar la campaña «hotel carbono neutral»',c:'Cuesta: presupuesto y una promesa sin base',e:{com:2,rep:1,due:3,eco:-5,amb:-1},flag:['rse','green'],
+     f:'Elegiste filantropía y promesa: valor social real, pero ninguna decisión del negocio cambió. Porter y Kramer llamarían a esto RSE periférica; y «carbono neutral» sin línea base es un pagaré que alguien cobrará. Los dueños, eso sí, están felices.',k:'RSE vs. valor compartido · Porter & Kramer (2006, 2011)'},
+    {l:'Mapear el sistema —agua, energía, comunidad, cadena, huéspedes— y tratarlo como estrategia, no como programa',c:'Cuesta: dos semanas y la paciencia de los dueños',e:{mot:2,com:2,amb:2,rep:1,due:-2,bie:-3},flag:['mapa','estrategia'],
+     f:'Trataste la sostenibilidad como arquitectura de negocio: viste umbrales, actores y demoras antes de mover fichas. En un entorno frágil y no lineal, el mapa te dará opciones que la competencia no verá. Los dueños querían un anuncio; les diste un método.',k:'Sostenibilidad como estrategia · BANI (Cascio, 2020)'},
+    {l:'Proteger la caja: congelar toda inversión no esencial hasta pasar la temporada',c:'Cuesta: opciones futuras y credibilidad interna',e:{eco:5,mot:-4,amb:-4,rep:-2,due:-3},flag:'tarde',
+     f:'Protegiste el margen de hoy y renunciaste a las opciones de mañana. En sistemas con demoras, la señal llega antes que el golpe: El Niño no espera a que cierre el trimestre. Valeria salió de la junta sin decir nada.',k:'Fragilidad y demoras · BANI (Brittle)'},
+    {l:'Encargar un diagnóstico ESG a una consultora antes de decidir cualquier cosa',c:'Cuesta: honorarios y dos meses de espera',e:{due:2,rep:1,eco:-4,mot:-1,bie:1},flag:'tarde',
+     f:'Compraste tiempo y un informe. El diagnóstico llegará en noviembre con recomendaciones genéricas; El Niño no leerá el anexo. Externalizar el pensamiento estratégico es la forma más cara de no decidir.',k:'Estrategia vs. cumplimiento · demoras (BANI)'},
+    {l:'Darle el tema a Valeria: un plan de sostenibilidad con presupuesto propio para la próxima junta',c:'Cuesta: sacar el tema de la mesa donde se decide el negocio',e:{amb:1,due:1,eco:-2,mot:1},flag:'silo',
+     f:'Le diste el tema a un departamento y lo sacaste de la mesa donde se decide el negocio. Valeria tendrá plan y presupuesto; Esteban y Rodrigo, otras prioridades. La sostenibilidad como departamento es la versión moderna de la RSE periférica.',k:'Silo vs. estrategia integrada'}]},
+  {q:'Rodrigo quiere lanzar la campaña de temporada. ¿Qué les dices a los huéspedes que ya reservaron?',
+   v:[{w:'mkt',t:'Si hablamos de sequía, cancelan. Vendamos paraíso.'},
+      {w:'sos',t:'Si no hablamos, se enteran en la ducha. Contémosles el plan de agua y energía.'},
+      {w:'fin',t:'Cada cancelación de ahora es caja que no vuelve.'}],
+   opts:[
+    {l:'Transparencia radical: enviar el plan de agua y energía antes de la llegada, con lo que sí ofrecemos',c:'Cuesta: algunas cancelaciones',e:{eco:-5,rep:3,tur:2,amb:1},flag:'transp',
+     f:'Perdiste unas reservas y ganaste algo más escaso: huéspedes que llegan de aliados. La expectativa gestionada es la mejor póliza de reputación que existe.',k:'Gestión de expectativas · confianza (Edelman Trust Barometer)'},
+    {l:'Campaña de temporada tal como estaba planeada; el racionamiento se explica a la llegada',c:'Cuesta: la sorpresa se pagará en recepción',e:{eco:5,bie:1},flag:'silencio',
+     f:'Protegiste la ocupación de hoy hipotecando la satisfacción de mañana. La expectativa no gestionada se cobra en recepción, con intereses.',k:'Riesgo reputacional diferido'},
+    {l:'Campaña «el hotel más verde de Guanacaste»',c:'Cuesta: credibilidad, si la realidad no acompaña',e:{rep:2,tur:1,due:1},flag:'green',
+     f:'Comunicar valores sin datos es un pagaré. Si la realidad de diciembre no acompaña, el nombre de eso es greenwashing; y se viraliza.',k:'Greenwashing (lo verás en la sesión 8)'},
+    {l:'Mensaje breve y positivo: «temporada seca, cielos despejados y nuevas experiencias», sin mencionar el racionamiento',c:'Cuesta: la mitad de la historia',e:{eco:2,tur:1,rep:-1},flag:'eufemismo',
+     f:'Contaste la mitad que vende. Cuando el racionamiento aparezca en la ducha, el huésped recordará que le hablaste del cielo. No es mentira; es una expectativa mal gestionada con buena redacción.',k:'Expectativas · omisión selectiva'},
+    {l:'Cancelación flexible sin penalidad para todos, y explicar el contexto solo a quien pregunte',c:'Cuesta: caja, y una conversación que no ocurre',e:{tur:1,eco:-2,rep:1,bie:1},flag:'flex',
+     f:'Cubriste el riesgo legal y financiero de la expectativa sin gestionarla: diste el derecho a irse, no una razón para quedarse. Quien no preguntó llegará igual de sorprendido.',k:'Gestión de expectativas · derecho vs. razón'}]},
+  {q:'Son las 11 p. m. Los dueños escriben por WhatsApp: «¿Podemos vernos mañana a las 7?». Tu pareja te recuerda que llevas tres semanas sin cenar en casa.',
+   v:[{w:'fam',t:'Sofía pregunta si vas a estar el sábado. Ya no le digo que sí.'},
+      {w:'due',t:'Sabemos que es mucho. Pero este año es el que define el hotel.'}],
+   opts:[
+    {l:'Aceptar la reunión y seguir así: la temporada lo exige',c:'Cuesta: lo que no aparece en el estado de resultados',e:{bie:-5,due:1},
+     f:'El hotel ganó una mañana; tu casa perdió algo que ningún indicador contabiliza. El burnout no avisa: se acumula.',k:'Sostenibilidad personal'},
+    {l:'Proponer las 9 y fijar con los dueños un ritmo de trabajo para la temporada: agenda, límites, respaldo',c:'Cuesta: una conversación incómoda',e:{bie:5,mot:1,due:1},flag:'ritmo',
+     f:'Negociaste el sistema, no solo la reunión. Un ritmo de decisión acordado es gobernanza; también para ti. En un entorno ansioso, el ritmo es una decisión estratégica.',k:'Ritmos de decisión bajo ansiedad · BANI (Anxious)'},
+    {l:'Dejar el mensaje en visto y responder mañana temprano',c:'Cuesta: dejar a los dueños en la incertidumbre',e:{bie:2,due:-4},
+     f:'Descansaste, pero dejaste a los dueños sin respuesta justo cuando esperaban liderazgo. Poner límites funciona mejor cuando se acuerdan que cuando se imponen por silencio.',k:'Límites acordados vs. límites impuestos'},
+    {l:'Responder «claro, a las 7» y pedirle a Marcela que cubra tu tarde para llegar a cenar',c:'Cuesta: un parche que mañana no estará',e:{bie:1,due:1,mot:-1},
+     f:'Resolviste el día, no el sistema: mañana el mensaje llegará a las 11 otra vez. Los parches de agenda no son ritmo, y Marcela también tiene casa.',k:'Ritmo vs. parche'},
+    {l:'Delegar la reunión en Esteban: que presente él las cifras mientras tú descansas',c:'Cuesta: una junta que quería verte a ti',e:{bie:3,due:-2,mot:1},
+     f:'Descansaste y enviaste al CFO a una junta que esperaba a la gerencia. Delegar reuniones no es delegar liderazgo; los dueños lo leyeron como distancia justo la semana en que buscaban dirección.',k:'Delegar tareas vs. delegar presencia'}]}
+ ],
+ qc:['¿Cuál es la diferencia operativa —no retórica— entre RSE, filantropía y valor compartido? Tomen una iniciativa de Interface, Patagonia o FIFCO y clasifíquenla.','Edmans sostiene que la etiqueta «ESG» debe desaparecer. Si tiene razón, ¿qué cambia en cómo una empresa presenta su estrategia de sostenibilidad al directorio?','Porter y Kramer escriben desde la multinacional. ¿Qué supuestos del valor compartido no se sostienen en una empresa con cadenas informales y capital escaso?','De las cuatro letras de BANI —frágil, ansioso, no lineal, incomprensible—, ¿cuál pesa más para una empresa mediana en América Latina, y por qué?']},
+
+/* ---------- ETAPA 2 · Sesión 2 ---------- */
+{n:2, mes:'Octubre', t:'¿Qué importa, y para quién?',
+ ses:'Doble materialidad', marco:'Materialidad financiera y de impacto (ESRS/EFRAG), materialidad ex ante (Khan, Serafeim & Yoon), lente sectorial SASB.',
+ ctx:'Valeria propone un taller de materialidad. Sobre la mesa hay veinte temas: agua, energía y diésel, empleo local, residuos, biodiversidad del estero, seguridad, condiciones laborales de los subcontratistas, huella de los vuelos de los huéspedes, precios de proveedores… El diésel ya subió 45% y el ICE anuncia que podría haber racionamiento eléctrico en abril, como en 2024. Los dueños quieren «atender todo».',
+ evs:()=>{const ev=[];
+   if(has('mapa')){apply({mot:1});ev.push(['ok','El mapa de septiembre hizo el taller más corto y más útil: el equipo ya sabía de qué hablaba. (+1 Equipo)']);}
+   if(has('silo')){apply({mot:-1});ev.push(['bad','El taller de materialidad lo convocó Valeria; Esteban y Rodrigo mandaron a un asistente. (−1 Equipo)']);}
+   if(has('tarde')){apply({amb:-3});ev.push(['bad','Sin mapa ni prioridades, el taller arranca desde cero y a mitad de octubre. (−3 Ambiental)']);}
+   return ev;},
+ dec:[
+  {q:'La matriz de materialidad. ¿Cómo la construyes?',
+   v:[{w:'due',t:'Todo importa. Somos un hotel sostenible: no podemos decir que la biodiversidad no es prioritaria.'},
+      {w:'fin',t:'Materialidad financiera: agua, energía y ocupación. Lo demás es literatura.'},
+      {w:'sos',t:'Dos direcciones: cómo la sequía y el diésel nos golpean, y cómo nosotros golpeamos al acuífero y al pueblo. Hay que validarlo con la ASADA y los proveedores, no solo entre nosotros.'},
+      {w:'rh',t:'Si el taller lo hacen cuatro gerentes, la gente de piso no lo va a sentir suyo.'}],
+   opts:[
+    {l:'Doble materialidad —financiera y de impacto— validada con equipo, ASADA y proveedores; priorizar cinco temas',c:'Cuesta: tiempo, y los dueños querían veinte',e:{amb:2,com:3,mot:2,eco:2,due:-2,bie:-3},flag:'matriz',
+     f:'Miraste en dos direcciones y dejaste que otros te corrigieran. Cinco temas con dueño y meta valen más que veinte en el cuadrante «alto-alto». Los dueños refunfuñan: querían que la biodiversidad del estero fuera prioridad uno.',k:'Doble materialidad · ESRS / EFRAG IG1'},
+    {l:'Solo materialidad financiera: agua, energía, ocupación',c:'Cuesta: lo que golpea al vecino y no a la caja',e:{eco:4,amb:-2,com:-3,rep:-2},flag:'solo_fin',
+     f:'Priorizaste con rigor lo que golpea la caja e ignoraste lo que golpea al vecino. La materialidad de impacto no desaparece porque no la midas: vuelve como reclamo, como regulación o como audio de WhatsApp.',k:'Materialidad financiera vs. de impacto'},
+    {l:'Matriz amplia: los veinte temas entran, con los dueños como patrocinadores de cada uno',c:'Cuesta: la capacidad de priorizar cuando apriete abril',e:{due:3,mot:-3,amb:-2,eco:-2,bie:-2},flag:'todoalto',
+     f:'Una matriz donde todo es prioritario ha dejado de priorizar y se convirtió en un ejercicio de consenso. El equipo recibió veinte encargos y ninguna prioridad; nadie sabe qué soltar cuando apriete abril.',k:'Criterio de calidad de una matriz de materialidad'},
+    {l:'Encargar la matriz a una consultora con la plantilla sectorial de SASB para hoteles',c:'Cuesta: honorarios y una matriz que nadie del pueblo validó',e:{due:2,rep:1,amb:1,eco:-3,com:-1,mot:-1},flag:'matriz_externa',
+     f:'Compraste una matriz correcta en promedio e incorrecta en particular: SASB sabe qué importa en un hotel genérico, no que tu pozo comparte acuífero con la ASADA. Quedó en un PDF impecable; en abril sabrás qué le faltó.',k:'Lente sectorial SASB · límites de la plantilla'},
+    {l:'Matriz interna de gerentes: cinco temas, validada con los dueños y nadie más',c:'Cuesta: las voces de afuera',e:{due:2,amb:1,eco:1,mot:-1,com:-2},flag:'matriz_interna',
+     f:'Priorizaste, y eso ya es mucho. Pero sin voces externas, la materialidad de impacto quedó en lo que ustedes creen que importa al pueblo. En abril la ASADA te dirá si acertaste.',k:'Validación de stakeholders · materialidad de impacto'}]},
+  {q:'Materialidad ex ante: Valeria trae tres señales tempranas. ¿En cuál inviertes atención —y algo de dinero— ahora?',
+   v:[{w:'sos',t:'El ICE avisa racionamiento eléctrico en abril; los aeropuertos reportan menos vuelos desde EE. UU.; y la ASADA discute una tarifa especial para hoteles.'},
+      {w:'mkt',t:'Menos vuelos es lo que me quita el sueño. Hay que ir por el turista nacional y el mexicano.'},
+      {w:'fin',t:'Racionamiento eléctrico significa generador diésel: carísimo. Eso sí lo cuantifico.'}],
+   opts:[
+    {l:'Escenarios combinados —sequía, diésel caro, racionamiento eléctrico, menos vuelos— con un plan por umbrales',c:'Cuesta: una semana de análisis en plena preparación',e:{amb:2,eco:3,mot:1,bie:-2},flag:'escenarios',
+     f:'Hiciste análisis de segundo orden: no una crisis, sino la interacción de varias. Menos lluvia → más generación térmica → tarifas más altas → más presión sobre tu diésel. Eso es no linealidad, y ahora tienes umbrales para reaccionar antes que el vecino.',k:'Materialidad ex ante · escenarios (BANI: Nonlinear)'},
+    {l:'Ir por el turista nacional y mexicano con una campaña de descuentos',c:'Cuesta: margen',e:{tur:1,eco:-3,rep:1},flag:'mercado_nac',
+     f:'Diversificaste demanda; bien. Pero un descuento no es una estrategia de resiliencia: si abril trae racionamiento, el huésped nacional también quiere ducha y aire acondicionado.',k:'Diversificación de mercado'},
+    {l:'Esperar el informe oficial del IMN y del ICE de noviembre antes de gastar en análisis',c:'Cuesta: nada hoy… y mucho en abril',e:{eco:2,amb:-3,bie:1},flag:'sin_escenarios',
+     f:'La certeza llega tarde por definición. La materialidad cambia en un entorno BANI; quien espera datos perfectos gestiona el pasado.',k:'Vigilancia de señales tempranas'},
+    {l:'Cerrar un contrato de suministro de diésel a precio fijo por seis meses',c:'Cuesta: la señal de precio que te habría obligado a consumir menos',e:{eco:2,due:2,amb:-1,bie:-1},flag:'diesel_fijo',
+     f:'Cubriste el precio, no el consumo: fijaste el costo de quemar diésel justo cuando la pregunta era cómo quemar menos. Una cobertura financiera razonable y una señal operativa equivocada: el generador ahora parece barato.',k:'Cobertura financiera vs. cambio operativo'},
+    {l:'Asegurar diciembre: campaña con las agencias de EE. UU. y depósitos no reembolsables',c:'Cuesta: huéspedes con candado',e:{eco:3,tur:-1,rep:-1,mot:-1},flag:'deposito',
+     f:'Aseguraste caja y trasladaste el riesgo al huésped: un depósito no reembolsable en una temporada de racionamiento es una expectativa con candado. Atendiste la señal comercial e ignoraste la operativa.',k:'Traslado de riesgo al cliente'}]}
+ ],
+ qc:['Un tema puede ser materialmente financiero sin ser de impacto, y viceversa. Construyan dos ejemplos concretos para una empresa de su elección.','La Unión Europea simplificó los ESRS pero conservó la doble materialidad. ¿Qué dice eso sobre qué parte del sistema los reguladores consideran esencial y cuál accesoria?','Khan, Serafeim y Yoon miden materialidad ex post. ¿Cómo la evalúa ex ante una empresa en un contexto BANI, donde los temas cambian de peso rápidamente?','¿A quién le toca decidir qué es material: a la empresa, a los inversionistas o a las comunidades? ¿Cómo se procesa un desacuerdo entre esos grupos?']},
+
+/* ---------- ETAPA 3 · Sesión 3 ---------- */
+{n:3, mes:'Noviembre', t:'Lo que no se mide, se inventa',
+ ses:'Medir para gestionar', marco:'GRI vs. ISSB, output → outcome → impacto, integridad de metas (SBTi, CDP), divergencia de ratings (Berg, Kölbel & Rigobon).',
+ ctx:'El auditor del CST (Certificación para la Sostenibilidad Turística) visita en enero. Rodrigo quiere poner «Carbono Neutral» en la web para la temporada. Valeria descubre que el hotel no tiene medidores de agua por área ni línea base de energía: la factura del ICE y el diésel del generador se pagan sin saber quién consume qué. Y un rating ESG de una OTA te puso dos hojas de cinco; los dueños están indignados.',
+ evs:()=>{const ev=[];
+   if(has('green')){apply({rep:-3});ev.push(['bad','La OTA notó que «el hotel más verde» no tiene un solo dato publicado. (−3 Reputación)']);}
+   if(has('matriz')){apply({amb:1});ev.push(['ok','Con cinco temas priorizados, Valeria sabe exactamente qué medir primero. (+1 Ambiental)']);}
+   return ev;},
+ dec:[
+  {q:'Rodrigo insiste: «Carbono Neutral» en la web antes de diciembre. ¿Qué decides?',
+   v:[{w:'mkt',t:'Todos lo ponen. Compramos unos créditos de carbono y listo.'},
+      {w:'sos',t:'No tenemos línea base de alcance 1 y 2. Prometer sin medir es exactamente lo que el Green Claims Code sanciona.'},
+      {w:'due',t:'A nosotros nos encantaría poder decirlo… si es verdad.'},
+      {w:'fin',t:'Los créditos cuestan, y con el diésel así el generador va a emitir más, no menos.'}],
+   opts:[
+    {l:'Instalar medidores por área, construir la línea base de agua, energía y diésel, y comunicar solo lo medido',c:'Cuesta: inversión y una campaña más lenta',e:{amb:2,rep:1,eco:-5,mot:1,bie:-2},flag:'linea_base',unflag:'green',
+     f:'Compraste la única cosa que hace gestionable una meta: definición, unidad, cobertura, línea base y responsable. Sin métrica no hay gestión; con ella, la promesa de diciembre tendrá denominador.',k:'Métricas gestionables · GRI / ISSB (IFRS S1-S2)'},
+    {l:'Compensar con créditos certificados y declarar «Carbono Neutral» para la temporada',c:'Cuesta: dinero y una cifra sin alcance',e:{rep:2,tur:1,due:1,eco:-4,amb:-1},flag:['green','claim_neutral'],
+     f:'Compensaste lo que no has medido. Es técnicamente posible y comunicacionalmente frágil: una cifra sin alcance, periodo ni cobertura es greenwashing involuntario esperando a un periodista.',k:'Integridad de metas · SBTi · Green Claims Code'},
+    {l:'Retirar toda mención climática de la web hasta tener la línea base verificada',c:'Cuesta: que nadie sepa que avanzas',e:{rep:-2,amb:1,eco:1},flag:'greenhush',
+     f:'Evitaste el greenwashing cayendo en greenhushing. El silencio también destruye aprendizaje: los huéspedes y el auditor del CST no saben que estás avanzando.',k:'Greenhushing'},
+    {l:'Medir solo el generador (alcance 1) y anunciar «energía 100% compensada» para diciembre',c:'Cuesta: un eslogan más grande que el cálculo',e:{rep:1,amb:1,eco:-2},flag:'claim_parcial',
+     f:'Mediste algo y prometiste más de lo medido: el alcance 2 y el agua quedaron fuera del cálculo y dentro del eslogan. Mejor que nada; peor que decir exactamente lo que es.',k:'Alcances 1, 2 y 3 · integridad de la afirmación'},
+    {l:'Inscribirse en el programa de carbono neutralidad del país y comunicar «en proceso»',c:'Cuesta: un reloj que empieza a correr',e:{rep:1,due:1,amb:1,eco:-2},flag:'proceso',
+     f:'«En proceso» es honesto si hay proceso: te inscribiste en un programa que exige inventario en doce meses. Sin línea base propia, el reloj corre y la promesa ya está en la web.',k:'Metas con trayectoria · SBTi'}]},
+  {q:'Dos hojas de cinco en la OTA y el CST en enero. Los dueños piden explicaciones.',
+   v:[{w:'due',t:'¡Dos hojas! ¿Qué hace la gente de sostenibilidad?'},
+      {w:'sos',t:'Ese rating pondera certificaciones y políticas escritas, no desempeño real. El CST, en cambio, verifica en sitio.'},
+      {w:'mkt',t:'Da igual lo que mida: el huésped filtra por hojas.'}],
+   opts:[
+    {l:'Entender qué mide cada rating, cerrar brechas documentales reales y preparar el CST con evidencia de campo',c:'Cuesta: semanas de expedientes',e:{rep:2,amb:2,due:3,bie:-2},flag:'cst',
+     f:'Leíste la divergencia de ratings como lo que es: diferencias de alcance, métricas y ponderación. Reaccionaste con evidencia, no con pánico. El auditor del CST te encontrará con expedientes, no con discursos.',k:'Divergencia de ratings · Berg, Kölbel & Rigobon (2022)'},
+    {l:'Contratar una consultora para «subir el rating» rápido con políticas de plantilla',c:'Cuesta: honorarios y una fachada',e:{rep:1,eco:-5,mot:-2,due:1},flag:'plantilla',
+     f:'Subiste el puntaje sin cambiar el desempeño: outputs (políticas firmadas) sin outcomes (consumo que baja). Cuando el auditor pida evidencia de campo, la plantilla no responderá.',k:'Output vs. outcome vs. impacto'},
+    {l:'No responder al rating: concentrar el esfuerzo en la operación y dejar que el CST hable en enero',c:'Cuesta: ceder la narrativa a la calificadora',e:{due:-5,rep:-3,bie:1},
+     f:'Puede que tengas razón en el fondo y estás perdiendo la forma: en un mercado que filtra por hojas, ignorar la señal cede la narrativa a la calificadora. Los dueños no entendieron la lección; entendieron que no tienes respuesta.',k:'Gestión de señales externas'},
+    {l:'Responder a la OTA con una carta formal cuestionando su metodología',c:'Cuesta: energía, y ninguna hoja',e:{due:2,rep:-1,bie:-1},
+     f:'La carta te dio razón y no hojas. Las calificadoras no cambian su ponderación por un correo de un hotel de cuarenta habitaciones; los huéspedes siguen filtrando por hojas.',k:'Divergencia de ratings · qué se puede cambiar'},
+    {l:'Concentrarse en el CST: pedir al auditor una pre-visita en diciembre para orientar los expedientes',c:'Cuesta: dejar la OTA sin respuesta por ahora',e:{amb:2,rep:1,eco:-2,bie:-1},flag:'cst',
+     f:'Fuiste al rating que verifica en sitio y dejaste la OTA para después. Una pre-visita convierte el examen en tutoría; los dueños quedaron con la duda de las dos hojas, pero el auditor de enero ya no será una sorpresa.',k:'Verificación en sitio vs. rating documental'}]}
+ ],
+ qc:['¿Qué distingue un indicador de output de uno de outcome y de uno de impacto? Tomen un indicador de un reporte (Bimbo, Schneider) y digan qué haría falta para subirlo un nivel.','Berg, Kölbel y Rigobon muestran que las calificadoras ESG divergen. Si una empresa recibe una nota baja de una agencia y alta de otra, ¿cuál debería preocupar más al CFO, y por qué?','GRI mira hacia afuera (impacto); ISSB mira hacia adentro (riesgo financiero). ¿Puede una empresa mediana costear ambos? ¿Cuál priorizarían en 2026 y con qué argumento?','¿Qué distingue una meta «net zero 2050» creíble de una que es solo relaciones públicas? Propongan tres pruebas.']},
+
+/* ---------- ETAPA 4 · Sesión 4 ---------- */
+{n:4, mes:'Diciembre', t:'La piscina, el generador y la propuesta de valor',
+ ses:'Rediseñar el modelo de negocio', marco:'Tres vías del valor compartido, Triple Layered Business Model Canvas (Joyce & Paquin), circularidad.',
+ ctx:'Arranca la temporada. Déficit de agua del 50% en el pozo; la ASADA raciona de noche. El diésel del generador cuesta el doble que hace un año y los transfers desde Liberia subieron 30%. La piscina evapora dos tanques por semana y el spa consume como diez habitaciones. Tu equipo —millennials y Gen Z entrenados para la excelencia— espera instrucciones claras.',
+ evs:()=>{const ev=[];
+   if(has('silencio')){apply({tur:-4});ev.push(['bad','Varios huéspedes se enteraron del racionamiento al llegar a recepción. (−4 Huéspedes)']);}
+   if(has('transp')){apply({tur:1,eco:2});ev.push(['ok','Los huéspedes venían preparados: tu plan pre-llegada evitó cancelaciones de último minuto. (+1 Huéspedes, +2 Económica)']);}
+   if(has('escenarios')){apply({amb:1});ev.push(['ok','Tus umbrales avisaron a tiempo: el spa se ajustó antes de la primera queja. (+1 Ambiental)']);}
+   if(has('eufemismo')){apply({tur:-2});ev.push(['bad','Los huéspedes recibieron «cielos despejados» y encontraron duchas con temporizador. (−2 Huéspedes)']);}
+   if(has('deposito')){apply({tur:-2,rep:-1});ev.push(['bad','Huéspedes atados por el depósito no reembolsable llegaron enojados de antemano. (−2 Huéspedes, −1 Reputación)']);}
+   if(has('flex')){apply({eco:-2});ev.push(['bad','Diez cancelaciones sin penalidad en la primera semana. (−2 Económica)']);}
+   if(has('todoalto')){apply({mot:-3});ev.push(['bad','Veinte prioridades y ninguna: el equipo improvisa en la primera semana. (−3 Equipo)']);}
+   return ev;},
+ dec:[
+  {q:'Piscina, spa y experiencia con la mitad del agua y el diésel al doble. ¿Rediseñas o restringes?',
+   v:[{w:'mkt',t:'Sin piscina no hay foto; sin foto no hay reserva.'},
+      {w:'sos',t:'Rediseñemos: spa seco, tour al acuífero, cocina de temporada seca, bici en vez de transfer. El agua es la historia.'},
+      {w:'fin',t:'Las pipas de agua cuestan, pero mantienen la tarifa. Cerrar el spa es dejar de facturar.'},
+      {w:'ext',who:'Tour operador aliado',t:'Si reinventan la experiencia, nosotros la vendemos. Pero decidan ya.'}],
+   opts:[
+    {l:'Reconcebir la oferta: «experiencia de temporada seca» con los tour operadores, spa seco y movilidad eléctrica compartida',c:'Cuesta: inversión y coordinación',e:{tur:3,rep:2,amb:2,com:2,eco:-5},flag:['rediseno','operadores'],
+     f:'Vía 1 de Porter y Kramer: reconcebiste el producto. La restricción se volvió narrativa y el diésel caro, argumento para el transfer eléctrico compartido. Sumaste aliados que pasean a tus huéspedes.',k:'Vía 1 · Reconcebir productos y mercados'},
+    {l:'Garantizar la experiencia completa: pipas de agua contratadas y generador para piscina y spa',c:'Cuesta: dinero, y paz con el pueblo',e:{tur:2,eco:-8,com:-7,amb:-8},flag:'pipas',
+     f:'Compraste tiempo y compraste conflicto: las pipas extraen del mismo acuífero y el generador quema el diésel más caro de la década. Resolviste tu síntoma exportando el problema al vecino y a la caja.',k:'Externalizar costos · capa ambiental del TLBMC'},
+    {l:'Cerrar piscina y spa por la emergencia, con una disculpa y 10% de descuento',c:'Cuesta: reseñas, y margen',e:{amb:2,eco:1,tur:-8,rep:-2},
+     f:'Ahorraste agua y quitaste experiencia sin diseño. En turismo, restringir sin re-diseñar se paga en reseñas.',k:'Restricción sin propuesta de valor'},
+    {l:'Piscina y spa por reserva, con horarios reducidos y precio dinámico; el ahorro financia pipas solo para la piscina',c:'Cuesta: la piscina se vuelve escasa y cara',e:{tur:1,eco:2,com:-2,amb:-2},flag:'pipas_light',
+     f:'Racionalizaste sin rediseñar: la piscina se volvió escasa y cara, y la pipa siguió sacando agua del mismo acuífero, aunque menos. Compraste tiempo con menos conflicto; no compraste una historia.',k:'Optimizar el modelo vs. rediseñarlo'},
+    {l:'Convertir la piscina en reservorio del hotel y vender la temporada como «retiro de silencio y senderos», sin spa',c:'Cuesta: llegar al mercado sin canal ni fotos',e:{amb:3,rep:1,tur:-3,com:1},flag:'retiro',
+     f:'Rediseñaste con audacia y sin aliados: la propuesta es coherente con el agua, pero llegó al mercado sin operadores que la vendan. Algunos huéspedes de piscina se sintieron estafados; otros la recordarán como el mejor viaje del año.',k:'Rediseño sin ecosistema · Vía 1 a medias'}]},
+  {q:'Productividad en la cadena: la lavandería y la cocina.',
+   v:[{w:'fin',t:'La lavandería interna gasta agua y diésel de la caldera. Tercerizar a Liberia sale más barato… hoy.'},
+      {w:'sos',t:'Circular: reusar agua gris para jardines, cambio de blancos a petición, caldera solar. Se paga en dos temporadas.'},
+      {w:'rh',t:'Si tercerizamos, siete mujeres del pueblo se quedan sin trabajo.'}],
+   opts:[
+    {l:'Circularidad en sitio: agua gris a jardines, cambio de blancos a petición, caldera solar térmica',c:'Cuesta: capex este trimestre',e:{amb:3,eco:-4,com:2,mot:1},flag:'circular',
+     f:'Vía 2: productividad en la cadena. Cada litro reusado es un litro que no compras ni disputas, y cada kilovatio solar es diésel que no quemas. La inversión se paga sola, y más rápido cuanto más caro el combustible.',k:'Vía 2 · Productividad en la cadena · circularidad (Ellen MacArthur)'},
+    {l:'Tercerizar la lavandería a una planta industrial en Liberia',c:'Cuesta: siete empleos locales y un camión diario',e:{eco:5,com:-5,mot:-4,amb:-2},flag:'terceriza',
+     f:'Bajaste el costo unitario y trasladaste el impacto: siete empleos locales y un camión diésel diario a Liberia. La capa social del canvas quedó en rojo justo cuando negocias agua con el pueblo.',k:'Tensión entre capas · TLBMC (Joyce & Paquin, 2016)'},
+    {l:'Postergar cualquier cambio en lavandería y cocina hasta mayo',c:'Cuesta: la caldera sigue quemando diésel al doble',e:{eco:-3,amb:-2,bie:2},
+     f:'Legítimo, pero el sistema no esperó: la caldera siguió quemando diésel al doble de precio. No decidir también decide.',k:'Costo de la inacción'},
+    {l:'Compartir lavandería con dos hoteles vecinos: una sola caldera, turnos y un camión eléctrico común',c:'Cuesta: coordinación, y la tuya',e:{eco:1,amb:2,com:1,mot:-1,bie:-2},flag:'circular',
+     f:'Productividad en la cadena por cooperación: una caldera para tres hoteles gasta menos que tres, y el camión eléctrico compartido convirtió a la competencia en socia logística. Cuesta coordinación; el litro y el kilovatio bajan igual.',k:'Vía 2 · cooperación en la cadena'},
+    {l:'Cambiar a químicos «eco», toallas de bambú y una tarjeta en cada habitación que lo cuente',c:'Cuesta: insumos más caros para el mismo sistema',e:{rep:1,tur:1,eco:-2},flag:'eco_cosmetico',
+     f:'Cambiaste insumos y dejaste el sistema: la caldera sigue quemando diésel y la lavandería, la misma agua. La tarjeta cuenta una mejora real y pequeña como si fuera la estrategia.',k:'Mejora cosmética vs. cambio de sistema'}]},
+  {q:'Con tu equipo, ¿cómo lideras la temporada?',
+   v:[{w:'rh',t:'Están motivados pero asustados. Quieren saber qué pueden decidir solos.'},
+      {w:'fin',t:'Cada hora de capacitación en diciembre es una hora que no atiende huéspedes.'},
+      {w:'due',t:'Confiamos en ti. Pero que nada se salga de control.'}],
+   opts:[
+    {l:'Formar «guardianes del agua y la energía»: protocolos por umbral y autonomía real',c:'Cuesta: horas de capacitación en plena temporada',e:{mot:4,eco:-4,amb:1,tur:1},flag:'guardianes',
+     f:'Distribuiste el liderazgo: cuarenta pares de ojos leyendo señales de agua y diésel. La resiliencia no se ordena; se entrena. Y tendrá dividendos el día que necesites ausentarte.',k:'Capacidades instaladas · resiliencia del sistema'},
+    {l:'Mando único durante la temporada: protocolos escritos y toda excepción pasa por ti',c:'Cuesta: tu energía y la iniciativa del equipo',e:{mot:-6,bie:-6,tur:1,due:1},flag:'control',
+     f:'El control da consistencia hoy y fragilidad mañana: te convertiste en el punto único de falla del sistema. Los dueños duermen tranquilos; tú no.',k:'Fragilidad · punto único de falla'},
+    {l:'Reducir turnos en temporada alta a lo estrictamente necesario para proteger el margen',c:'Cuesta: talento y empleos locales antes de Navidad',e:{eco:5,mot:-9,com:-4},flag:'recorte_horas',
+     f:'El ahorro visible creó un costo invisible: talento entrenado que empieza a mirar otros hoteles, y familias locales que sienten el recorte justo antes de Navidad.',k:'Capa social del modelo de negocio'},
+    {l:'Contratar un gerente de operaciones de temporada que absorba el día a día',c:'Cuesta: caja, y una capacidad que se irá en mayo',e:{bie:3,eco:-4,mot:-1,tur:1,due:1},
+     f:'Compraste tiempo con caja: alguien decide por ti, pero nadie más aprendió a decidir. En mayo se irá con lo que sabe; la capacidad no quedó instalada.',k:'Capacidad comprada vs. capacidad instalada'},
+    {l:'Manual de protocolos para todo el personal, lista de chequeo diaria y un supervisor por turno',c:'Cuesta: iniciativa, y un cuello de botella por turno',e:{tur:1,amb:1,mot:-2,eco:-1,bie:-1},flag:'manual',
+     f:'Estandarizaste sin delegar: el manual dice qué hacer cuando todo es normal, y en temporada seca casi nada lo es. El supervisor se volvió cuello de botella y el equipo aprendió a preguntar en vez de leer señales.',k:'Estandarizar vs. distribuir criterio'}]}
+ ],
+ qc:['Ubiquen a Tony\'s, Fairphone, Too Good To Go y Worn Wear en las tres vías de Porter y Kramer (producto y mercado, cadena de valor, clúster local). ¿Alguna usa más de una vía?','¿Qué pasaría con el modelo de Too Good To Go si sus proveedores eliminaran el desperdicio en origen? ¿Qué nos dice eso sobre modelos de negocio construidos sobre fallas del sistema?','La base de la pirámide fue criticada por convertir la pobreza en mercado. ¿Cuándo un modelo BoP crea valor compartido y cuándo solo extrae?','Raworth propone diseñar para «prosperar sin crecer». ¿Es compatible con el mandato de crecimiento que un CEO latinoamericano tiene frente a su directorio?']},
+
+/* ---------- ETAPA 5 · Sesión 5 ---------- */
+{n:5, mes:'Enero', t:'Hasta dónde llega tu visibilidad',
+ ses:'La cadena de suministro', marco:'Visibilidad más allá del tier 1 (Villena & Gioia), trazabilidad vs. auditoría, EUDR, modelos de aseguramiento, valor compartido con proveedores.',
+ ctx:'Tus proveedores orgánicos de Nicoya perdieron media cosecha por la sequía y el fertilizante subió con el diésel. El tour operador que te trae el 40% de los huéspedes avisa que subirá tarifas 25% o dejará de operar rutas. El proveedor de combustible pide pago por adelantado. Y descubres que tu proveedor de mariscos subcontrata a cuadrillas informales sin seguro.',
+ evs:()=>{const ev=[];
+   if(has('operadores')){apply({tur:1,eco:2});ev.push(['ok','Los operadores aliados sostuvieron las llegadas pese al recargo aéreo. (+1 Huéspedes, +2 Económica)']);}
+   if(has('terceriza')){apply({rep:-4,com:-2});ev.push(['bad','Radio Guanacaste reportó el camión de la lavandería y las siete despedidas. (−4 Reputación, −2 Comunidad)']);}
+   if(has('pipas')){apply({com:-3});ev.push(['bad','Las pipas del hotel ya son tema en la asamblea comunal. (−3 Comunidad)']);}
+   return ev;},
+ dec:[
+  {q:'Tus proveedores orgánicos perdieron media cosecha y piden anticipos.',
+   v:[{w:'fin',t:'Importar desde San José es 20% más barato… si el diésel no sube más.'},
+      {w:'sos',t:'Compras anticipadas y menú de temporada seca con lo que sí crece. Y hagamos trazable el origen: el huésped paga por la historia.'},
+      {w:'ext',who:'Finca La Ceiba · proveedor',t:'Sin anticipo no sembramos la segunda cosecha. Ustedes son el 60% de nuestras ventas.'},
+      {w:'mkt',t:'«Orgánico y local» es nuestra frase en la web. Si importamos, la borro.'}],
+   opts:[
+    {l:'Compras anticipadas, menú de temporada seca y un programa de desarrollo de proveedores (riego eficiente, trazabilidad)',c:'Cuesta: margen del restaurante y capital de trabajo',e:{com:4,rep:2,tur:1,amb:1,eco:-5},flag:'proveedores',
+     f:'Repartiste el riesgo climático por la cadena y creaste valor compartido: el proveedor sobrevive y tu cocina cuenta una historia que ningún importado puede contar. Trazabilidad como capacidad comercial, no como trámite.',k:'Valor compartido en proveedores · Nestlé Cocoa Plan · ICAFE'},
+    {l:'Cambiar a un distribuidor de San José por la temporada, con opción de volver en mayo',c:'Cuesta: el propósito, cuando más te definía',e:{eco:5,com:-5,rep:-5,amb:-3},flag:'importar',
+     f:'El propósito se demuestra cuando cuesta. «Orgánico y local» dejó de ser cierto justo cuando era tu diferencia, y el camión desde San José quema el diésel más caro de la década.',k:'Cumplimiento externalizado vs. valor compartido'},
+    {l:'Exigir certificación orgánica formal como condición para seguir comprando',c:'Cuesta: proveedores que no pueden pagarla',e:{amb:1,com:-4,eco:-2,rep:1},flag:'exigir_cert',
+     f:'Confundiste trazabilidad con auditoría y cargaste el costo de cumplimiento al eslabón con menos poder. Sin remediación ni desarrollo, la exigencia expulsa proveedores en vez de mejorarlos.',k:'Distribuir costos de cumplimiento · Villena & Gioia (2020)'},
+    {l:'Anticipo parcial a La Ceiba a cambio de exclusividad y precio fijo por dos años',c:'Cuesta: trasladar el riesgo climático al eslabón más débil',e:{eco:1,com:1,due:1},flag:'exclusividad',
+     f:'Financiaste al proveedor y lo ataste: exclusividad y precio fijo en plena sequía trasladan el riesgo climático a quien menos puede absorberlo. Hoy parece valor compartido; si la segunda cosecha falla, es un contrato que La Ceiba no podrá cumplir.',k:'Riesgo en la cadena · quién lo absorbe'},
+    {l:'Mezclar: mitad local con anticipo, mitad importado, sin comunicar la proporción',c:'Cuesta: la parte que no cuentas',e:{eco:2,com:1,rep:-1,amb:-1},flag:'mezcla',
+     f:'Un puente razonable con un defecto: la parte que no cuentas. «Orgánico y local» sigue en la web con la mitad de verdad; la trazabilidad a medias es la que más cuesta explicar cuando alguien pregunta.',k:'Trazabilidad parcial · afirmaciones de origen'}]},
+  {q:'El tour operador —40% de tus huéspedes— subirá 25% por el diésel o cortará rutas.',
+   v:[{w:'mkt',t:'Sin ellos, enero se cae. Aceptemos y subamos la tarifa.'},
+      {w:'sos',t:'Rediseñemos la logística juntos: transfers compartidos, rutas cortas, tours locales a pie. Menos diésel para ambos.'},
+      {w:'fin',t:'Un 25% se come el margen del paquete. Busquemos otro operador.'}],
+   opts:[
+    {l:'Co-diseñar con el operador: logística compartida de bajo combustible y paquetes locales',c:'Cuesta: semanas de negociación',e:{eco:3,amb:2,tur:2,com:1,bie:-2},flag:'operadores',
+     f:'Convertiste un proveedor en socio: menos diésel para los dos, un producto nuevo para el huésped y una relación que resiste la próxima subida. Eso es cadena como frontera de valor, no solo de riesgo.',k:'Cadena como frontera de valor'},
+    {l:'Aceptar el 25% y ajustar la tarifa del paquete con un recargo «por combustible» visible',c:'Cuesta: reservas',e:{eco:-3,tur:-5,rep:-1},
+     f:'Trasladaste el costo hacia el eslabón que puede irse: el huésped. En una crisis de combustibles, quien no rediseña logística solo reparte facturas.',k:'Traslado de costos en la cadena'},
+    {l:'Cambiar a un operador más barato de otra provincia',c:'Cuesta: un aliado que conoce al pueblo',e:{eco:3,com:-4,tur:-2,rep:-2},
+     f:'Ahorraste margen perdiendo un aliado local que conoce a tus huéspedes y al pueblo. La visibilidad de tu cadena acaba de retroceder un tier.',k:'Visibilidad del tier 1'},
+    {l:'Abrir canal directo: invertir en marketing digital para depender menos del operador',c:'Cuesta: caja ahora, resultados en dos temporadas',e:{eco:-3,tur:1,rep:1,due:1,mot:-1},flag:'directo',
+     f:'Diversificaste canal —bien— y lo hiciste en enero, cuando el operador ya te traía el 40%. El canal directo tarda dos temporadas en madurar; mientras tanto pagaste marketing y el 25% del operador.',k:'Diversificación de canal · horizonte'},
+    {l:'Aceptar el 25% a cambio de exclusividad regional para el operador y un mínimo garantizado de habitaciones',c:'Cuesta: flexibilidad si el operador corta rutas',e:{eco:1,tur:1,com:-1,due:1},flag:'exclusiva_op',
+     f:'Cerraste un buen trato para hoy: tarifa y volumen. Y entregaste flexibilidad: si el operador corta rutas en abril, tu 40% se va con él y el mínimo garantizado no ampara a nadie.',k:'Dependencia de canal · riesgo de concentración'}]},
+  {q:'Descubres cuadrillas informales sin seguro en tu proveedor de mariscos (tier 2).',
+   v:[{w:'rh',t:'Si un trabajador se accidenta, la historia sale con nuestro nombre.'},
+      {w:'fin',t:'No son nuestros empleados. Pidamos una carta de cumplimiento y ya.'},
+      {w:'sos',t:'Mapeemos hasta donde el riesgo lo justifique, no hasta donde sea cómodo. Y demos plazo y apoyo para regularizar.'}],
+   opts:[
+    {l:'Debida diligencia con remediación: plazo, apoyo para asegurar a la cuadrilla y seguimiento',c:'Cuesta: tiempo y algo de dinero',e:{com:2,rep:1,amb:1,eco:-3},flag:'diligencia',
+     f:'Mapeaste hasta donde el riesgo material lo justifica e incluiste remediación, no solo exclusión. La trazabilidad se volvió capacidad, y el riesgo laboral dejó de ser un titular en espera.',k:'Debida diligencia más allá del tier 1 · EUDR como lógica'},
+    {l:'Pedir al proveedor una declaración jurada de cumplimiento laboral y seguir comprando',c:'Cuesta: un riesgo que sigue ahí',e:{eco:1,rep:-2},flag:'carta',
+     f:'Un papel no es evidencia. Saber de dónde viene el producto no prueba que cumpla un estándar; y el auditor del CST, la prensa o un accidente lo sabrán antes que tú.',k:'Trazabilidad ≠ auditoría'},
+    {l:'Suspender las compras al proveedor hasta que demuestre que toda su cadena está asegurada',c:'Cuesta: el ingreso de una familia del pueblo',e:{amb:1,com:-3,tur:-2,eco:-2},
+     f:'Excluiste el riesgo y también el ingreso de una familia del pueblo, sin oportunidad de mejorar. El estándar subió; la comunidad lo sintió como castigo.',k:'Exclusión vs. desarrollo de proveedores'},
+    {l:'Exigir al proveedor que asegure a la cuadrilla en treinta días, sin apoyo, o pierde el contrato',c:'Cuesta: el estándar sin la escalera',e:{rep:1,com:-2},flag:'ultimatum',
+     f:'Pusiste el estándar y no la escalera. El proveedor asegurará a tres y despedirá a cinco, y el riesgo laboral se mudó de tu cadena al pueblo. Tú cumples; el problema no se resolvió.',k:'Cumplimiento sin remediación'},
+    {l:'Reportar el caso a la Caja y al Ministerio de Trabajo y dejar que las autoridades actúen',c:'Cuesta: la relación, en un pueblo donde todos saben quién llamó',e:{rep:-1,com:-3,due:1,bie:1},
+     f:'Cumpliste la ley y delegaste la relación: en un pueblo pequeño la inspección llegó con tu nombre en la boca. La debida diligencia moderna espera remediación acompañada, no denuncia sin acompañamiento.',k:'Debida diligencia · remediación vs. denuncia'}]}
+ ],
+ qc:['Villena y Gioia documentan que los proveedores de segundo nivel rara vez son auditados. ¿Dónde termina la visibilidad real en una cadena típica de la región, y por qué se pierde justo ahí?','Nestlé Cocoa Plan construye un programa propio; Enveritas externaliza la verificación sin auditorías. ¿Cuál escala mejor en América Latina, y por qué?','¿Cuándo un programa de proveedores crea valor compartido y cuándo solo transfiere el costo del cumplimiento al eslabón más débil? Propongan un criterio.','El EUDR exige geolocalización de parcelas. ¿Cómo cumple una empresa que compra a cientos de pequeños productores sin título de propiedad, y quién paga ese costo?']},
+
+/* ---------- ETAPA 6 · Sesión 6 ---------- */
+{n:6, mes:'Febrero', t:'Sostenibilidad en el lenguaje del CFO',
+ ses:'El caso financiero', marco:'Cinco palancas de valor (Henisz, Koller & Nuttall), ROSI de NYU Stern, financiamiento sostenible (ICMA), correlación vs. causalidad, valor de opción.',
+ ctx:'El ICE confirma racionamiento eléctrico en abril. Esteban trae el Excel: el generador diésel costará US$18.000 al mes; un sistema solar con baterías cuesta US$240.000 y tarda cuatro meses en instalarse. BID Invest ofrece un crédito verde a tasa preferente con un KPI de reducción de diésel. Los dueños pueden aportar capital, pero ya lo hicieron el año pasado. La contadora advierte que la planilla de temporada baja no está cubierta.',
+ evs:()=>{const ev=[];
+   if(has('linea_base')){apply({eco:3,due:1});ev.push(['ok','Tu línea base permitió cuantificar el caso financiero en una tarde; el banco no pidió nada más. (+3 Económica, +1 Dueños)']);}
+   else {apply({eco:-3});ev.push(['bad','Sin línea base, Esteban estimó consumos a ojo y el banco pidió tres semanas más de análisis. (−3 Económica)']);}
+   if(has('circular')){apply({eco:3,amb:1});ev.push(['ok','La caldera solar y el agua gris ya ahorran diésel y litros medibles. (+3 Económica, +1 Ambiental)']);}
+   if(has('pipas')){apply({eco:-5});ev.push(['bad','Las pipas y el generador vaciaron la caja de enero. (−5 Económica)']);}
+   if(has('diesel_fijo')){apply({eco:2,amb:-1});ev.push(['ok','El contrato a precio fijo ahorró en enero… y encareció el caso solar: el generador ahora parece barato. (+2 Económica, −1 Ambiental)']);}
+   if(has('proveedores')){apply({eco:2});ev.push(['ok','El menú de temporada seca bajó el costo de importación. (+2 Económica)']);}
+   return ev;},
+ dec:[
+  {q:'Generador diésel o solar con baterías y crédito verde. ¿Cuál es tu caso financiero?',
+   v:[{w:'fin',t:'Solar es lindo, pero la caja no aguanta cuatro meses de obra y deuda. El generador funciona ya.'},
+      {w:'sos',t:'Solar se paga en cinco años con el diésel actual; en tres si sigue subiendo. Y el KPI del crédito nos obliga a medir.'},
+      {w:'due',t:'Nosotros queríamos paneles desde hace años. Pongamos capital si hace falta, pero que no nos vuelvan a pedir.'},
+      {w:'ext',who:'BID Invest',t:'Tasa preferente si reducen diésel 40% en 24 meses; penalidad si no.'}],
+   opts:[
+    {l:'Modelo ROSI con línea base y sensibilidad: solar con crédito verde y un KPI creíble; generador solo como respaldo',c:'Cuesta: deuda y cuatro meses de obra',e:{amb:3,eco:-5,rep:1,due:2,bie:-2},flag:'solar',
+     mod:()=>has('linea_base')?{eco:4}:{eco:-2},
+     f:'Construiste la cadena causal práctica → cambio operativo → driver → métrica financiera, y declaraste la incertidumbre. Aceptaste un KPI material y medible, con penalidad relevante pero no inviable. La palanca de activos convierte diésel en capital natural.',
+     fmod:()=>has('linea_base')?' Tu línea base hizo que el banco aprobara en dos semanas (+4 Económica).':' Sin línea base, el banco cobró la incertidumbre en tasa y en tiempo (−2 Económica).',
+     k:'Cinco palancas · ROSI · principios ICMA'},
+    {l:'Generador diésel propio para abril; la inversión solar se evalúa con la temporada cerrada',c:'Cuesta: el combustible más caro de la década, cada mes',e:{eco:3,amb:-7,rep:-2,due:-3},flag:'diesel',
+     f:'Resolviste abril con el activo que más rápido se vuelve varado: un generador que quema el diésel más caro de la década. Sin caso financiero de largo plazo, cada mes de racionamiento reabre la misma discusión.',k:'Activos varados · horizonte temporal'},
+    {l:'Solar con capital de los dueños: sin deuda, sin KPI externo, obra inmediata',c:'Cuesta: la paciencia de la familia',e:{amb:2,due:-8,eco:-2},flag:'solar_due',
+     f:'Financiaste bien y gobernaste mal: los dueños pusieron capital por segunda vez y sin un KPI que discipline la ejecución. La sostenibilidad que solo vive de la fe de los dueños se agota con la fe.',k:'Gobernanza del financiamiento'},
+    {l:'Alquilar un generador más eficiente por un año y posponer la decisión solar a la próxima temporada',c:'Cuesta: la tasa preferente, que no esperará',e:{eco:1,amb:-3,due:-1,bie:1},flag:'alquiler',
+     f:'Redujiste el daño y aplazaste la decisión: el generador alquilado quema menos que el tuyo y sigue quemando el combustible más caro de la década. En mayo el crédito verde ya no estará a esta tasa.',k:'Valor de opción · costo de esperar'},
+    {l:'Energía como servicio: un tercero instala los paneles y te vende el kilovatio; sin capex, contrato a quince años',c:'Cuesta: margen y quince años de contrato',e:{amb:2,eco:1,due:1,rep:1,bie:-1},flag:'ppa',
+     f:'Compraste kilovatios en vez de paneles: sin capex ni deuda, con el riesgo técnico en el proveedor y un contrato que te acompaña quince años. Menos retorno que ser dueño de los paneles; mucha más velocidad.',k:'Estructuras de financiamiento · PPA'}]},
+  {q:'La contadora es clara: entre inversiones, anticipos y diésel, la planilla de temporada baja no alcanza. Los dueños sugieren despedir al 20% del personal.',
+   v:[{w:'due',t:'Nos duele, pero la familia no puede seguir poniendo plata. Recortemos ahora.'},
+      {w:'rh',t:'Son gente del pueblo entrenada durante años. Si los despedimos, el hotel de al lado los contrata el lunes.'},
+      {w:'fin',t:'Es la palanca más rápida. La más rápida, no la más barata.'},
+      {w:'fam',t:'Si te toca despedir a alguien, que no sea un domingo y que no lo cargues sola.'}],
+   opts:[
+    {l:'Reestructurar: reducir la planilla un 20% con liquidaciones completas y carta de recomendación',c:'Cuesta: capacidades, confianza y licencia social',e:{eco:7,mot:-10,com:-6,rep:-3,bie:-2},flag:'despidos',
+     f:'La caja respira y el sistema sangra: despediste capacidades que entrenaste durante años, y familias del mismo pueblo con el que negocias el agua. La palanca «productividad y talento» funciona en reversa.',k:'Palanca de talento · costo invisible'},
+    {l:'Reducción compartida: menos horas para todos, empezando por tu salario, con finanzas abiertas al equipo',c:'Cuesta: ingreso de todos, empezando por el tuyo',e:{eco:4,mot:1,rep:1,due:1,bie:-2},flag:'compartida',
+     f:'Repartiste el dolor con transparencia y te pusiste al frente de la fila. El equipo pierde ingreso, no confianza; y la desconfianza siempre sale más cara que las horas.',k:'Productividad y talento · transparencia interna'},
+    {l:'No tocar la planilla: inventar ingresos de temporada baja con el equipo (retiros, turismo local, voluntariado del agua)',c:'Cuesta: caja, si el equipo no responde',e:{eco:-4,mot:3,com:2,tur:1},
+     mod:()=>has('guardianes')?{eco:4}:null,
+     f:'Apostaste a que el talento es el activo, no el costo. Si el equipo responde, la temporada baja se reinventa; si no, la caja lo cobrará.',
+     fmod:()=>has('guardianes')?' Y respondió: tus guardianes llenaron el calendario con ideas propias (+4 Económica).':'',
+     k:'Crecimiento de ingresos · talento como activo'},
+    {l:'Vacaciones adelantadas y permisos sin goce «voluntarios» para temporada baja, con retorno garantizado',c:'Cuesta: el que menos puede negarse',e:{eco:3,mot:-2,com:-1,due:1,bie:-1},flag:'permisos',
+     f:'Bajaste la planilla sin despedir, y trasladaste el costo a quien menos puede pedir permiso sin goce. «Voluntario» en un pueblo con un empleador principal es una palabra generosa. El equipo lo aceptó; no lo eligió.',k:'Flexibilidad laboral · poder de negociación'},
+    {l:'Pedir a la familia un préstamo puente para cubrir tres meses de planilla',c:'Cuesta: la paciencia de los dueños, otra vez',e:{eco:3,mot:1,due:-4,bie:-1},flag:'puente',
+     f:'Protegiste a la gente con la paciencia de la familia, que ya puso capital el año pasado. La planilla se pagó; la conversación de mayo sobre gobernanza será dura.',k:'Financiamiento familiar · gobernanza'}]},
+  {q:'Esteban propone un cuadro de «valor creado» para los dueños. ¿Qué cuenta el reporte?',
+   v:[{w:'fin',t:'Solo lo que puedo defender: ahorro de diésel y agua. Lo demás es fe.'},
+      {w:'mkt',t:'¡Pongamos que la sostenibilidad nos dio 15% más de reservas!'},
+      {w:'sos',t:'Separemos lo observado de lo supuesto: ahorros medidos, riesgo evitado estimado y opciones estratégicas explícitas.'}],
+   opts:[
+    {l:'Tres columnas: valor medido, riesgo evitado estimado y valor de opción, con supuestos visibles',c:'Cuesta: admitir incertidumbre ante la familia',e:{due:4,rep:1,eco:2,mot:1},flag:'caso_honesto',
+     f:'Distinguiste correlación de causalidad: no prometiste retornos automáticos, pero mostraste qué parte del valor se defiende con datos y qué parte es opción. Los dueños entendieron por fin qué están comprando.',k:'Correlación vs. causalidad · valor de opción'},
+    {l:'Presentar el crecimiento de reservas como retorno de la estrategia sostenible',c:'Cuesta: credibilidad en el primer trimestre malo',e:{due:2,rep:1},flag:'atribucion',
+     f:'Vendiste una correlación como causa. Funciona hasta que un trimestre malo desmiente la historia; entonces la sostenibilidad se lleva la culpa que no le tocaba.',k:'Evidencia ESG–desempeño · Friede, Busch & Bassen (2015)'},
+    {l:'Solo ahorros contables; nada que no esté en la factura',c:'Cuesta: subvalorar tu propia estrategia',e:{due:1,amb:-1,mot:-2},
+     f:'Riguroso y miope: dejaste fuera el riesgo evitado y el acceso futuro a clientes y capital. Cumplir hoy preserva opciones mañana; no contarlas es subvalorar tu propia estrategia.',k:'Cinco palancas · más allá del ahorro'},
+    {l:'Cuadro con benchmark: tus KPIs frente a tres hoteles certificados de la región',c:'Cuesta: contexto sin causalidad',e:{due:2,rep:1,bie:-1},flag:'benchmark',
+     f:'Contexto útil y causalidad ausente: el benchmark dice dónde estás, no qué produjo la diferencia. Los dueños vieron un ranking; siguen sin saber qué compraron.',k:'Benchmark vs. cadena causal'},
+    {l:'Encargar el cuadro a Rodrigo y a Esteban juntos: una versión para la junta y otra para la web',c:'Cuesta: dos verdades sobre el mismo valor',e:{due:1,rep:1,mot:-1},flag:'dos_versiones',
+     f:'Dos versiones del mismo valor ya es un problema de gobernanza: la que se publica y la que se cree. Cuando alguien compare las dos, la palabra será greenwashing aunque ambas sean ciertas.',k:'Consistencia interna–externa del reporte'}]}
+ ],
+ qc:['De las cinco palancas de McKinsey (crecimiento, costos, regulación, talento, inversiones), ¿cuál es defendible con datos en la mayoría de empresas y cuál es casi siempre una apuesta?','Friede, Busch y Bassen encuentran correlación positiva entre desempeño ESG y financiero, pero no causalidad. ¿Cómo presenta un CFO esa evidencia sin sobrevenderla?','Ørsted fue el caso de éxito de la década y en 2025 tuvo que recapitalizarse. ¿Qué falló: la estrategia de sostenibilidad, la gestión del riesgo regulatorio o el supuesto de tasas bajas?','Un bono ligado a sostenibilidad penaliza a la empresa si no cumple su KPI. ¿Qué KPI escogerían y qué penalidad sería creíble sin ser suicida?']},
+
+/* ---------- ETAPA 7 · Sesión 7 ---------- */
+{n:7, mes:'Marzo', t:'La brecha de propósito',
+ ses:'Liderar el cambio', marco:'Brecha de propósito (Gartenberg, Prat & Serafeim), incentivos y gaming, procesar la resistencia, accountability (Bebchuk & Tallarita).',
+ ctx:'Encuesta interna de Marcela: la alta dirección dice que el propósito es «turismo regenerativo»; los mandos medios creen que lo que se premia es ocupación y ahorro de costos. El jefe de mantenimiento se resiste a los protocolos de agua: «con las restricciones, los aires no enfrían y los huéspedes se quejan». Los dueños proponen un bono «por sostenibilidad». Y este viernes son los quince años de tu hija Sofía.',
+ evs:()=>{const ev=[];
+   if(has('control')){apply({mot:-4});ev.push(['bad','Todo pasa por ti y se nota: la encuesta dice que nadie decide sin permiso. (−4 Equipo)']);}
+   if(has('guardianes')){apply({mot:1});ev.push(['ok','Los guardianes del agua aparecen en la encuesta como lo mejor del año. (+1 Equipo)']);}
+   if(has('despidos')){apply({mot:-4,com:-3});ev.push(['bad','Los despidos de febrero siguen en la conversación del pueblo y del comedor de empleados. (−4 Equipo, −3 Comunidad)']);}
+   if(has('recorte_horas')){apply({mot:-3});ev.push(['bad','El recorte de horas de diciembre se recuerda: dos personas más renunciaron. (−3 Equipo)']);}
+   if(has('directo')){apply({eco:2});ev.push(['ok','El canal directo empezó a traer reservas propias. (+2 Económica)']);}
+   if(has('operadores')){apply({eco:4});ev.push(['ok','Los operadores aliados llenaron marzo con tarifa firme: el canal directo compensó el recargo aéreo. (+4 Económica)']);}
+   if(has('cst')){apply({eco:3,tur:1});ev.push(['ok','El sello CST vigente abrió una cuenta corporativa europea que exige certificación verificada. (+3 Económica, +1 Huéspedes)']);}
+   if(has('guardianes')){apply({bie:2});ev.push(['ok','Delegar en los guardianes te devolvió dos tardes por semana. (+2 Bienestar)']);}
+   if(has('apoyo')||has('familia')||has('ritmo')){apply({bie:3});ev.push(['ok','El ritmo que negociaste te dio margen para pensar en marzo. (+3 Bienestar)']);}
+   return ev;},
+ dec:[
+  {q:'El bono «por sostenibilidad» de los dueños. ¿Cómo lo diseñas?',
+   v:[{w:'due',t:'Bono para todos si bajamos el consumo de agua 30%. Simple.'},
+      {w:'fin',t:'Simple y peligroso: van a cerrar duchas para ganar el bono y las reseñas caen.'},
+      {w:'rh',t:'Los mandos medios necesitan saber qué se premia de verdad. Hoy creen que solo la ocupación.'},
+      {w:'sos',t:'Métricas materiales, con umbral de calidad y horizonte. Que nadie gane bajando agua a costa del huésped.'}],
+   opts:[
+    {l:'Incentivo combinado: agua y diésel por área, satisfacción del huésped y seguridad; umbrales y horizonte de dos temporadas',c:'Cuesta: un diseño más lento que el bono simple',e:{mot:2,amb:2,tur:1,due:1,bie:-2},flag:'incentivos',
+     f:'Diseñaste con cuidado: métricas materiales, combinación equilibrada y horizonte. Cerraste la brecha de propósito por donde se cierra: por lo que realmente se premia en la gerencia media.',k:'Incentivos y gaming · Gartenberg, Prat & Serafeim (2019)'},
+    {l:'Bono simple por bajar el agua 30%',c:'Cuesta: lo que el equipo haga para ganarlo',e:{amb:2,tur:-6,mot:1,rep:-3},flag:'gaming',
+     f:'Aceleraste un comportamiento y creaste gaming: se cerraron duchas, se apagaron aires, cayeron reseñas. Premiar una mejora aislada a costa de otro frente es la forma más rápida de desprestigiar la sostenibilidad ante el equipo.',k:'Gaming de incentivos'},
+    {l:'Sin bono: invertir ese dinero en comunicar el propósito y reconocer públicamente a quien lo vive',c:'Cuesta: que la narrativa conviva con otra operación',e:{mot:-3,due:-2},flag:'sin_incentivos',
+     f:'El propósito no produce resultados por ser inspirador. Sin decisiones, incentivos ni consecuencias, la narrativa coexiste con una operación que sigue maximizando ocupación a corto plazo.',k:'El propósito necesita accountability · Bebchuk & Tallarita'},
+    {l:'Bono individual por ahorro de agua para el jefe de cada área, medido con los medidores',c:'Cuesta: que cada área optimice su medidor y no el hotel',e:{amb:2,mot:-1,tur:-2},flag:'bono_jefes',
+     f:'Midiendo bien y premiando mal: los jefes optimizaron su medidor y no el hotel. La cocina bajó agua mandando los blancos a lavandería; lavandería subió el suyo. Gaming con datos es gaming más preciso.',k:'Incentivos por silo · gaming'},
+    {l:'Posponer el bono un año: primero medir dos temporadas y fijar la línea base',c:'Cuesta: un año más de brecha entre lo que se dice y lo que se premia',e:{amb:1,due:-1,mot:-1,eco:1},
+     f:'Prudente y lento: mientras mides, la gerencia media sigue creyendo que se premia la ocupación. La brecha de propósito no espera a la línea base; se cierra o se ensancha cada mes.',k:'Brecha de propósito · costo del tiempo'}]},
+  {q:'El jefe de mantenimiento se resiste: «los protocolos de agua hacen que los aires no enfríen».',
+   v:[{w:'rh',t:'No es sabotaje. Tiene un trade-off real entre confort, consumo y quejas.'},
+      {w:'sos',t:'Hagamos un experimento en un ala: medir temperatura, agua y quejas durante dos semanas.'},
+      {w:'fin',t:'Si tiene razón, cambiamos; si no, que cumpla. Pero decidan rápido.'}],
+   opts:[
+    {l:'Tratar la objeción como técnica: experimento en un ala, con datos y decisión explícita del trade-off',c:'Cuesta: dos semanas y algo de tu tiempo',e:{mot:2,amb:1,tur:1,bie:-2},flag:'experimento',
+     f:'Distinguiste objeción técnica de defensa del statu quo, tradujiste la meta a economía operativa y decidiste el trade-off a la vista de todos. El jefe de mantenimiento se volvió coautor del protocolo.',k:'Procesar la resistencia'},
+    {l:'Sostener el protocolo tal cual: es un compromiso del crédito verde y no se negocia por área',c:'Cuesta: información que ya no llegará',e:{amb:1,mot:-6,tur:-3},
+     f:'Ganaste obediencia y perdiste información: la objeción era real y ahora se resolverá a escondidas, apagando protocolos cuando no mires.',k:'Resistencia mal procesada'},
+    {l:'Suspender el protocolo para no perder al jefe de mantenimiento',c:'Cuesta: consistencia y el KPI del crédito',e:{mot:1,amb:-5,due:-3},
+     f:'Compraste paz a costa de consistencia: el equipo aprendió que la meta se negocia con quien más protesta. Y el KPI del crédito verde acaba de retroceder.',k:'Consecuencia y accountability'},
+    {l:'Subir dos grados el set point de los aires en todo el hotel y avisar a los huéspedes con una tarjeta',c:'Cuesta: decidir por decreto lo que era un trade-off local',e:{amb:2,tur:-3,mot:1},
+     f:'Resolviste el trade-off por decreto, para todos y sin datos: en el ala norte los aires no lo necesitaban; en la sur, dos grados fueron demasiados. El jefe de mantenimiento tenía razón a medias, y nadie lo comprobó.',k:'Decisión uniforme vs. experimento'},
+    {l:'Contratar un ingeniero externo para auditar los aires y decidir con su informe',c:'Cuesta: honorarios y sacar del proceso a quien más sabe del edificio',e:{amb:1,eco:-3,mot:-1},flag:'auditoria_ext',
+     f:'Compraste una opinión técnica y sacaste del proceso a quien más sabe del edificio. El informe llegó correcto y tarde; el jefe de mantenimiento no se sintió coautor de nada.',k:'Resistencia como información'}]},
+  {q:'Los quince años de Sofía son este viernes, en plena ocupación.',
+   v:[{w:'fam',t:'Sofía no pide un regalo; pide que estés.'},
+      {w:'due',t:'Este viernes llega el grupo de la agencia de Texas. ¿Vas a estar?'}],
+   opts:[
+    {l:'Delegar el fin de semana en el equipo y estar presente en casa',c:'Cuesta: soltar el control 72 horas',e:{bie:9},
+     mod:()=>has('guardianes')?{mot:2}:{tur:-5,mot:-3},
+     fdyn:()=>has('guardianes')?'El hotel no te extrañó: lo habías entrenado exactamente para esto. Delegar con capacidades instaladas también es liderazgo (+2 Equipo).':'Te fuiste sin haber construido autonomía: el equipo improvisó y se notó (−5 Huéspedes, −3 Equipo). Delegar sin desarrollar es abdicar.',
+     k:'Sostenibilidad personal · capacidades instaladas'},
+    {l:'Quedarte: regalo y videollamada',c:'Cuesta: lo que no se recupera',e:{bie:-7,tur:1,due:1},
+     f:'El hotel ganó un fin de semana; tu casa perdió algo más difícil de reponer. El burnout no avisa: se acumula.',k:'Sostenibilidad personal'},
+    {l:'Celebrar en el hotel, entre llamadas',c:'Cuesta: estar a medias en todo',e:{bie:-2,tur:1},
+     f:'A medias en todo, del todo en nada. A veces funciona; como hábito, es la fórmula del desgaste.',k:'Sostenibilidad personal'},
+    {l:'Ir a la fiesta y volver al hotel a medianoche para recibir al grupo de Texas',c:'Cuesta: estar en dos lugares con la cabeza en uno',e:{bie:3,tur:1,mot:-1},
+     f:'Estuviste en la fiesta con el hotel en la cabeza y en el hotel con la fiesta en el corazón. Sofía lo notó menos que tú; el equipo notó que no confías en él.',k:'Sostenibilidad personal · presencia'},
+    {l:'Pedirle a Marcela que cubra el fin de semana, con un bono extra',c:'Cuesta: el fin de semana de Marcela',e:{bie:4,eco:-2,mot:1,due:-1},
+     f:'Delegaste en una persona y pagaste por ello: funcionó, y Marcela no vio a su familia. Delegar en el sistema habría sido gratis; delegar en una persona cuesta, y se acumula en otra cuenta.',k:'Delegar en personas vs. en el sistema'}]}
+ ],
+ qc:['Gartenberg, Prat y Serafeim muestran que el propósito importa cuando lo cree la gerencia media, no la alta dirección. ¿Cómo se mide esa brecha en una organización y qué se hace con el resultado?','Danone fue la primera «empresa con misión» del CAC 40 y su CEO salió un año después. ¿Fue un fracaso del propósito o de la ejecución? ¿Qué debió hacer distinto el directorio?','Si atar el 20 % del bono de un CEO a una métrica ESG cambia su comportamiento, ¿qué métrica escogerían y qué conducta no deseada podría inducir?','Un gerente de operaciones se resiste a una meta de emisiones porque le sube el costo unitario. ¿Es resistencia legítima? ¿Cómo la procesa un CEO sin desautorizar ni ceder?']},
+
+/* ---------- ETAPA 8 · Sesión 8 ---------- */
+{n:8, mes:'Abril', t:'Las primeras 72 horas',
+ ses:'Stakeholders y crisis reputacional', marco:'Saliencia de stakeholders (Mitchell, Agle & Wood), greenwashing y greenhushing, transparencia radical, protocolo de las primeras 72 horas.',
+ ctx:'Pico de la sequía. La ASADA anuncia un corte de tres días a comercios y el ICE aplica racionamiento eléctrico de cuatro horas diarias. En el pueblo circula un audio: «los hoteles se llevan el agua y prenden generadores mientras nosotros no tenemos ni para bañarnos». Una huésped con 800 mil seguidores publica: «Pagué por paraíso y me racionan la ducha». Radio Guanacaste pide entrevista. Los vecinos convocan a protesta frente al hotel el sábado.',
+ evs:()=>{const ev=[];
+   if(has('pipas')){apply({com:-4});ev.push(['bad','El audio menciona tus pipas por nombre. (−4 Comunidad)']);}
+   if(has('green')||has('claim_neutral')){apply({rep:-5});ev.push(['bad','La huésped encontró el «carbono neutral» de la web y lo puso en una foto al lado del generador. (−5 Reputación)']);}
+   if(has('transp')){apply({tur:1});ev.push(['ok','La mayoría de los huéspedes ya sabía del racionamiento: la publicación viral tuvo poco eco en el hotel. (+1 Huéspedes)']);}
+   if(has('matriz')){apply({com:2});ev.push(['ok','La ASADA te llamó antes de anunciar el corte: recordaban el taller de octubre. (+2 Comunidad)']);}
+   if(has('solar')||has('ppa')){apply({amb:1,rep:1});ev.push(['ok','Los paneles llegaron justo: el generador casi no prende durante el racionamiento. (+1 Ambiental, +1 Reputación)']);}
+   if(has('exclusividad')){apply({com:-2});ev.push(['bad','La Ceiba no pudo cumplir el precio fijo y en el pueblo se supo quién puso la cláusula. (−2 Comunidad)']);}
+   if(has('claim_parcial')){apply({rep:-2});ev.push(['bad','Un huésped preguntó en redes qué significa «energía compensada» y nadie supo contestar. (−2 Reputación)']);}
+   if(has('bono_jefes')){apply({tur:-2});ev.push(['bad','Las áreas se pasan el consumo unas a otras; el huésped nota los cambios de toallas y de aires. (−2 Huéspedes)']);}
+   if(has('diesel')){apply({com:-3,amb:-3});ev.push(['bad','El generador ruge de noche y el pueblo lo oye. (−3 Comunidad, −3 Ambiental)']);}
+   if(has('circular')){apply({eco:4});ev.push(['ok','El agua gris y la caldera solar hicieron del racionamiento un costo menor: tu factura de pipas y diésel fue la mitad que la del hotel vecino. (+4 Económica)']);}
+   if(has('proveedores')){apply({eco:3,com:1});ev.push(['ok','Los proveedores locales sostuvieron el abasto sin recargo de flete y salieron a defenderte en el pueblo. (+3 Económica, +1 Comunidad)']);}
+   if(has('ritmo')){apply({bie:2});ev.push(['ok','Tu hora protegida sobrevivió a la semana de crisis. (+2 Bienestar)']);}
+   if(has('gaming')){apply({tur:-3});ev.push(['bad','Las duchas cerradas «por el bono» aparecen en tres reseñas de esta semana. (−3 Huéspedes)']);}
+   return ev;},
+ dec:[
+  {q:'¿A quién atiendes primero? Poder, legitimidad y urgencia.',
+   v:[{w:'mkt',t:'La influencer. Ochocientos mil seguidores. Todo lo demás es local.'},
+      {w:'sos',t:'La ASADA y los vecinos tienen legitimidad y acaban de ganar urgencia. La influencer tiene poder; pero sin la comunidad no hay hotel.'},
+      {w:'fin',t:'El banco del crédito verde leyó el audio. Preguntan si hay riesgo de licencia social.'},
+      {w:'rh',t:'El equipo vive en ese pueblo. Escuchan el audio en sus casas.'}],
+   opts:[
+    {l:'Mapa de saliencia: primero personas y comunidad (ASADA, vecinos, equipo); luego huésped y prensa; con un vocero y hechos confirmados',c:'Cuesta: 72 horas sin dormir',e:{com:3,mot:2,rep:1,bie:-3},flag:'protocolo72',
+     f:'Proteger personas y contener el daño antes de optimizar la narrativa. Priorizaste por poder, legitimidad y urgencia, y nombraste un vocero con acceso a información real. La primera decisión de una crisis es la más difícil de revertir; la tomaste bien.',k:'Saliencia · Mitchell, Agle & Wood (1997) · primeras 72 horas'},
+    {l:'Primero la huésped: upgrade, cena y reembolso hoy; la comunidad, el lunes',c:'Cuesta: decirle al pueblo en qué lugar de la fila está',e:{tur:2,com:-6,rep:-2,mot:-3},flag:'fila',
+     f:'Compraste silencio, no convicción, y le dijiste al pueblo en qué lugar de la fila está. Un stakeholder con legitimidad que gana urgencia adquiere poder muy rápido; lo verás el sábado.',k:'Saliencia dinámica'},
+    {l:'Comunicado inmediato: «el hotel opera dentro de la concesión autorizada», para frenar el rumor',c:'Cuesta: la prueba de mañana',e:{rep:-7,com:-4,due:-3},flag:'negacion',
+     f:'Negación prematura, minimización, sin datos: exactamente lo que el protocolo de 72 horas prohíbe. Cuando aparezcan los números del pozo, el comunicado de hoy será la prueba de mañana.',k:'Errores irreversibles en crisis · Volkswagen, Vale'},
+    {l:'Atender primero al banco: reunión de urgencia para asegurar que el crédito no se cae',c:'Cuesta: descuidar lo que respalda el crédito',e:{eco:2,due:2,com:-3,rep:-2,mot:-1},flag:'banco_primero',
+     f:'Protegiste el financiamiento y descuidaste lo que lo respalda: el banco preguntaba por la licencia social, y tu respuesta fue una reunión sin la ASADA. El sábado lo vieron en la protesta.',k:'Saliencia · poder sin legitimidad'},
+    {l:'Convocar a todos —ASADA, vecinos, huésped, radio— a una reunión abierta el viernes',c:'Cuesta: un micrófono abierto sin hechos confirmados',e:{com:1,tur:-1,bie:-3},flag:'asamblea',
+     f:'Democrático y prematuro: sin hechos confirmados ni vocero, la asamblea fue un micrófono abierto. Escuchar a todos a la vez no es priorizar; y en 72 horas, priorizar es lo que se espera de ti.',k:'Primeras 72 horas · secuencia'}]},
+  {q:'El agua es de todos. La ASADA y los vecinos esperan una propuesta antes del sábado.',
+   v:[{w:'ext',who:'Doña Rosa · ASADA',t:'Si el hotel raciona con nosotros y ayuda con los tanques, yo misma paro la protesta.'},
+      {w:'fin',t:'Cofinanciar tanques y cosecha de lluvia es plata que no tenemos en abril.'},
+      {w:'due',t:'Hagámoslo. Para esto fundamos el hotel.'},
+      {w:'mkt',t:'Con o sin acuerdo, necesito una foto con la comunidad el sábado.'}],
+   opts:[
+    {l:'Acuerdo de uso escalonado con la ASADA, cofinanciar tanques y cosecha de lluvia, y datos abiertos del pozo',c:'Cuesta: una inversión fuerte en el peor mes',e:{com:7,rep:3,amb:2,due:1,eco:-7},flag:'asada',
+     mod:()=>has('matriz')?{com:2}:null,
+     f:'Pasaste de competir por el recurso a cogestionarlo. Rompiste la tragedia de los comunes con la única herramienta que funciona: reglas compartidas y datos que todos pueden ver. Doña Rosa canceló la protesta.',
+     fmod:()=>has('matriz')?' La validación de octubre con la ASADA hizo que el acuerdo se firmara en un día (+2 Comunidad).':'',
+     k:'Licencia social · reglas compartidas'},
+    {l:'Sostener la concesión: el hotel usa el pozo dentro de lo autorizado y así se lo dirá al MINAE',c:'Cuesta: la licencia social',e:{com:-10,rep:-6,eco:-4,due:-4},flag:'litigio',
+     f:'Legalmente impecable, sistémicamente explosivo: ganaste el argumento y perdiste al vecino. La licencia social no se litiga; el sábado hubo pancartas y cámaras.',k:'Licencia para operar'},
+    {l:'Abrir el tanque del hotel a los vecinos tres días y convocar a la prensa local',c:'Cuesta: poco, y estructura nada',e:{com:2,rep:1,eco:-3},flag:'foto',
+     mod:()=>has('green')?{rep:-4}:null,
+     f:'La generosidad puntual alivia pero no estructura, y la foto sin acuerdo huele a relaciones públicas. Sin reglas, la buena voluntad se evapora más rápido que el agua.',
+     fmod:()=>has('green')?' Y con el historial «verde» de la web, la foto se leyó como greenwashing (−4 Reputación).':'',
+     k:'Gesto vs. estructura'},
+    {l:'Reducir el consumo del hotel un 30% de inmediato —piscina cerrada, toallas a petición— y anunciarlo sin negociar nada',c:'Cuesta: hacer lo correcto a solas',e:{amb:2,com:2,tur:-3,rep:1},flag:'unilateral',
+     f:'Hiciste lo correcto a solas: el gesto es real y el pueblo lo vio, pero nadie firmó reglas. Cuando la piscina reabra en mayo, el conflicto volverá a la misma mesa vacía.',k:'Acción unilateral vs. reglas compartidas'},
+    {l:'Proponer a la ASADA un contrato de compra de agua en bloque a tarifa especial',c:'Cuesta: convertir un bien común en un contrato',e:{com:-3,due:1,rep:-2,amb:-1},flag:'tarifa',
+     f:'Convertiste un bien común en un contrato de suministro: legal, ordenado y leído como «el hotel compra el agua del pueblo». Doña Rosa no firmó, y el audio del sábado tuvo segunda parte.',k:'Bienes comunes · Ostrom'}]},
+  {q:'Radio Guanacaste y la huésped influencer. ¿Cómo comunicas?',
+   v:[{w:'mkt',t:'Comunicado pulido y una historia de Instagram con los paneles.'},
+      {w:'sos',t:'Entrevista con los datos del pozo y del diésel, incluyendo lo que no hemos logrado. Progreso, no perfección.'},
+      {w:'fin',t:'Cuidado con lo que prometes: el banco lee todo.'},
+      {w:'rh',t:'Que el vocero sea alguien que sepa lo que pasa en piso.'}],
+   opts:[
+    {l:'Transparencia radical: entrevista con datos abiertos, límites y plan; y atender tú a la huésped con una experiencia real del acuífero',c:'Cuesta: exponerte al escrutinio, y tu energía',e:{rep:4,com:3,tur:2,bie:-4},flag:'datos',unflag:'green',
+     mod:()=>has('linea_base')?{rep:1}:{rep:-3},
+     fdyn:()=>'Hiciste visible lo que un stakeholder razonable necesita para evaluar progreso y corrección de errores. Convertiste a la crítica en narradora: nadie cuenta mejor la historia del agua que quien vino por la piscina.'+(has('linea_base')?' Tenías línea base: cada cifra tuvo denominador, periodo y cobertura, y el rumor se volvió conversación (+1 Reputación).':' Pero sin línea base, algunas cifras salieron a ojo y un vecino las cuestionó al aire (−3 Reputación). La transparencia necesita datos, no solo valentía.'),
+     k:'Transparencia radical · Patagonia, Oatly, Tony\'s Chocolonely'},
+    {l:'Comunicado corporativo pulido e historia con los paneles',c:'Cuesta: cercanía',e:{rep:1,com:-3,tur:1},
+     mod:()=>(has('green')||has('claim_neutral'))?{rep:-5}:null,
+     fdyn:()=>(has('green')||has('claim_neutral'))?'La historia con los paneles al lado del generador y el «carbono neutral» de la web fue el meme del fin de semana (−5 Reputación). El greenwashing cobra intereses.':'Cumpliste el trámite sin tocar la emoción. En comunidades pequeñas la confianza se construye cara a cara; en redes, con datos.',
+     k:'Greenwashing · UK Green Claims Code · caso H&M'},
+    {l:'Posponer toda declaración hasta tener los datos del pozo verificados por un tercero',c:'Cuesta: que la historia se cuente sin ti',e:{rep:-6,com:-3,tur:-3},flag:'greenhush',
+     f:'El silencio también comunica, y en crisis comunica culpa. La nota salió igual, con otras fuentes, y la huésped publicó sin tu versión. Greenhushing en el peor momento posible.',k:'Greenhushing'},
+    {l:'Entrevista en la radio con datos, y no responder públicamente a la publicación viral',c:'Cuesta: la conversación global',e:{rep:1,com:2,tur:-2},
+     f:'Hablaste con el pueblo y callaste con el mundo: la radio te creyó; la publicación siguió viva sin tu versión. Transparencia selectiva es transparencia a medias.',k:'Transparencia selectiva'},
+    {l:'Contratar una agencia de crisis y que el vocero sea su consultor',c:'Cuesta: honorarios y cercanía',e:{rep:1,com:-2,eco:-3,mot:-1},
+     f:'Un vocero que no vive en el pueblo ni sabe lo que pasa en piso: pulido en la radio, ajeno en la asamblea. La agencia cobró; la confianza no llegó.',k:'Vocero · acceso a información real'}]}
+ ],
+ qc:['En el modelo de Mitchell, Agle y Wood, ¿quién suele tener poder sin legitimidad y quién legitimidad sin urgencia? ¿A quién se puede ignorar en una crisis, y con qué riesgo?','Oatly y Tony\'s publican sus propios problemas. ¿Bajo qué condiciones la transparencia radical genera confianza y bajo cuáles solo entrega municiones?','H&M no mintió deliberadamente; usó un índice que resultó engañoso. ¿Cómo se evita el greenwashing involuntario? ¿Y cuál es el costo oculto del greenhushing: cuándo callar es la decisión correcta?','Comparen la respuesta de Volkswagen y la de Vale en Brumadinho en las primeras 72 horas. ¿Qué decisiones de comunicación fueron irreversibles?']},
+
+/* ---------- ETAPA 9 · Sesión 9 ---------- */
+{n:9, mes:'Mayo', t:'Cerrar el ciclo',
+ ses:'Estrategia integrada e IA', marco:'Seis capitales (Integrated Reporting), puntos de apalancamiento (Meadows), IA como socio de pensamiento (Mollick; Dell\'Acqua et al.).',
+ ctx:'Llegan las primeras lluvias. El diésel bajó un poco, pero no volverá a los precios de antes, y el IMN ya habla del próximo ciclo. Los dueños piden una estrategia integrada para la junta anual: qué aprendimos, qué queda instalado, cómo decidimos la próxima vez. Valeria propone usar IA para construir escenarios; Esteban desconfía; Rodrigo quiere un reporte «bonito».',
+ evs:()=>{const ev=[];
+   if(has('asada')){apply({com:2,amb:1});ev.push(['ok','El acuerdo con la ASADA sobrevivió a abril: el fondo de tanques ya tiene su primer aporte. (+2 Comunidad, +1 Ambiental)']);}
+   if(has('solar')){apply({eco:4,amb:1});ev.push(['ok','Los paneles operan y el KPI del crédito va en camino: la tasa preferente se mantiene. (+4 Económica, +1 Ambiental)']);}
+   if(has('diesel')){apply({eco:-4});ev.push(['bad','El diésel de abril vació la caja de temporada baja. (−4 Económica)']);}
+   if(has('alquiler')){apply({eco:-2});ev.push(['bad','Devolviste el generador alquilado; la decisión solar vuelve a la mesa sin la tasa preferente. (−2 Económica)']);}
+   if(has('ppa')){apply({amb:1,eco:1});ev.push(['ok','Los paneles del tercero operan; el ahorro es menor porque el margen se lo lleva el contrato. (+1 Ambiental, +1 Económica)']);}
+   if(has('incentivos')){apply({mot:1});ev.push(['ok','El incentivo combinado bajó agua y diésel sin tocar las reseñas. (+1 Equipo)']);}
+   if(has('guardianes')){apply({eco:3,tur:1});ev.push(['ok','Tus guardianes optimizaron consumos sin que lo pidieras: el sistema instalado paga dividendos. (+3 Económica, +1 Huéspedes)']);}
+   if(has('transp')){apply({tur:1,eco:3});ev.push(['ok','Los huéspedes de la temporada seca ya reservaron la próxima: la honestidad pre-llegada se volvió lealtad. (+1 Huéspedes, +3 Económica)']);}
+   if(has('incentivos')){apply({eco:3});ev.push(['ok','El ahorro de agua y diésel del bono combinado se ve en el EBITDA de mayo. (+3 Económica)']);}
+   if(has('apoyo')||has('familia')){apply({bie:3});ev.push(['ok','Sofía cuenta que sus amigos hablan del hotel; tu pareja, que este año sí llegaste a cenar. (+3 Bienestar)']);}
+   if(has('datos')){apply({rep:1});ev.push(['ok','La entrevista de abril se volvió la pieza más compartida sobre el hotel, y a favor. (+1 Reputación)']);}
+   return ev;},
+ dec:[
+  {q:'La estrategia integrada para la junta. ¿Cómo la construyes?',
+   v:[{w:'due',t:'Queremos saber si el hotel vale más o menos que hace un año, y no solo en dinero.'},
+      {w:'fin',t:'Seis capitales suena a poesía. Yo reporto uno.'},
+      {w:'sos',t:'Una sola lógica de valor: cómo cada decisión movió capital financiero, natural, humano, social, intelectual y manufacturado.'},
+      {w:'mkt',t:'Que sea un reporte que se pueda publicar.'}],
+   opts:[
+    {l:'Reporte integrado: materialidad, tesis de valor, KPIs con línea base, caso financiero, gobernanza, stakeholders, riesgos y señales de revisión, en seis capitales',c:'Cuesta: semanas de trabajo transversal',e:{due:4,rep:2,amb:1,mot:1,eco:2,bie:-2},flag:'integrado',
+     f:'No contabilizaste seis cuentas: mostraste cómo una inversión bajó capital financiero y subió capital natural, humano y relacional que sostiene flujos futuros. La junta vio por primera vez la sostenibilidad como sistema de decisiones, no como capítulo.',k:'Reporte integrado · seis capitales'},
+    {l:'Reporte de mercadeo con los logros del año',c:'Cuesta: credibilidad, si el relato supera al dato',e:{rep:1,due:1},
+     mod:()=>(has('green')||has('foto')||has('plantilla'))?{rep:-5}:null,
+     fdyn:()=>(has('green')||has('foto')||has('plantilla'))?'El aplauso propio sonó hueco: la comunidad y el auditor del CST recordaron lo que faltó (−5 Reputación). El relato sin dato es un boomerang.':'Celebrar está bien (+1 Reputación); celebrar con datos, créditos compartidos y lo que falta habría sido estrategia.',
+     k:'Relato vs. dato'},
+    {l:'Estado financiero comentado: los resultados del año con notas breves sobre agua y diésel',c:'Cuesta: que la próxima crisis encuentre un Excel',e:{due:-3,mot:-2,amb:-2},
+     f:'Reportaste un capital y perdiste la lógica de valor: la próxima crisis encontrará un Excel, no una estrategia. Lo que no se documenta se repite.',k:'Fragmentación de la estrategia'},
+    {l:'Reporte de sostenibilidad GRI completo, separado del financiero, con verificación externa',c:'Cuesta: dos reportes y dos lógicas de valor',e:{rep:2,amb:1,due:1,eco:-3,bie:-2},flag:'gri_separado',
+     f:'Riguroso y paralelo: dos reportes, dos lógicas. La junta leyó el financiero y hojeó el otro. El dato está; la conexión entre agua, diésel y margen sigue sin contarse.',k:'GRI vs. reporte integrado'},
+    {l:'Presentación de doce láminas: los cinco aprendizajes del año y una hoja de ruta',c:'Cuesta: un sistema que vive en tu memoria',e:{due:2,rep:1,mot:1,bie:1},
+     f:'Claro, breve y sin sistema: cinco aprendizajes que dependen de que tú los recuerdes. Una hoja de ruta sin KPIs con línea base es una lista de deseos con fechas.',k:'Aprendizaje documentado vs. tácito'}]},
+  {q:'Valeria propone usar IA para construir los escenarios del próximo ciclo: Niño o Niña, diésel, tarifas, vuelos. ¿Cómo la usas?',
+   v:[{w:'sos',t:'Para ampliar opciones y sintetizar cuarenta reportes. Luego validamos con la ASADA, el ICE y los datos del hotel.'},
+      {w:'fin',t:'Si el modelo se equivoca en una premisa, la conclusión cambia. ¿Quién responde?'},
+      {w:'mkt',t:'Que la IA escriba el reporte completo; ahorramos semanas.'},
+      {w:'rh',t:'Al equipo le preocupa que la IA decida por ellos.'}],
+   opts:[
+    {l:'IA como socio de pensamiento: escenarios, síntesis y alternativas; validación humana de supuestos, causalidad y trade-offs; reglas de uso y accountability',c:'Cuesta: disciplina de validación',e:{mot:1,amb:1,eco:3,due:2,bie:2},flag:'ia_validada',
+     f:'Usaste la buena zona de la frontera irregular (síntesis, hipótesis, escenarios) y respetaste la zona de precaución (causalidad, stakeholders vulnerables, trade-offs ambiguos). Aceleraste el aprendizaje sin ceder el juicio.',k:'Frontera irregular · Dell\'Acqua et al. (2023) · Mollick'},
+    {l:'Encargar a la IA el borrador completo de la estrategia y presentarlo tras una lectura rápida',c:'Cuesta: el juicio, no la tarea',e:{bie:3,due:-4,rep:-3,mot:-3},flag:'ia_ciega',
+     f:'Delegaste el juicio, no la tarea: la estrategia citó un dato del pozo que no existe y un vecino de la junta lo notó. La IA amplía opciones; no responde ante la ASADA.',k:'Zona de precaución · validación humana'},
+    {l:'Escenarios a mano con el equipo: la IA queda fuera hasta tener una política de uso',c:'Cuesta: semanas que otros hoteles ya ahorran',e:{bie:-2,mot:-1,eco:-1},
+     f:'Evitaste un riesgo renunciando a una capacidad: semanas de síntesis que otros hoteles ya hacen en días. La disciplina no es prohibir; es validar.',k:'Co-inteligencia'},
+    {l:'Encargar los escenarios a una consultora que usa IA, con informe en dos semanas',c:'Cuesta: el aprendizaje, que se va con el informe',e:{due:1,eco:-3,mot:-1,bie:1},
+     f:'Tercerizaste la síntesis y con ella el aprendizaje: el informe llegó impecable y nadie del hotel sabe cómo se construyó. La próxima vez volverás a pagar.',k:'Capacidad interna vs. informe externo'},
+    {l:'Piloto de IA solo con Valeria y Esteban; el resto del equipo, fuera hasta tener resultados',c:'Cuesta: confirmar que la IA es «de gerencia»',e:{amb:1,due:1,mot:-2},
+     f:'Sensato y estrecho: los dos que más saben aprendieron más; el equipo confirmó que la IA es «de gerencia». La frontera irregular se explora mejor con más ojos.',k:'Adopción de IA · quién aprende'}]},
+  {q:'¿Qué dejas instalado? Puntos de apalancamiento.',
+   v:[{w:'sos',t:'Cambiemos reglas e información, no solo parámetros: fondo de agua permanente con la ASADA, datos abiertos, protocolos por umbral y revisión anual de materialidad.'},
+      {w:'fin',t:'Un fondo permanente es un costo permanente.'},
+      {w:'due',t:'Que el próximo Niño encuentre un sistema, no un hotel solo.'},
+      {w:'fam',t:'Y que te encuentre a ti con energía.'}],
+   opts:[
+    {l:'Cambiar reglas e información: fondo de agua con la ASADA, datos abiertos, protocolos por umbral, materialidad anual y tu propio ritmo sostenible',c:'Cuesta: recursos permanentes',e:{com:3,amb:2,rep:2,mot:1,bie:4,eco:-4},flag:'legado',
+     f:'Interviniste arriba en la escalera de Meadows: reglas, información y metas, no solo parámetros. El resultado sostenible ocurrirá por diseño, no por excepción. Y te incluiste en el diseño.',k:'Puntos de apalancamiento · Meadows (1999)'},
+    {l:'Ajustar parámetros: metas de consumo un poco más exigentes',c:'Cuesta: poco, y cambia poco',e:{amb:1,eco:1},
+     f:'Eficiencia incremental: útil, pero de bajo apalancamiento. Ajustaste un número en un sistema cuyas reglas e incentivos siguen iguales; la próxima sequía volverá a ser una batalla.',k:'Bajo apalancamiento · parámetros'},
+    {l:'Pasar la página: descansar, sin más',c:'Cuesta: que lo aprendido se evapore',e:{bie:6,due:-2,amb:-2},
+     f:'El descanso es legítimo y necesario. Solo recuerda: lo que no se documenta, se repite.',k:'Ciclo de aprendizaje'},
+    {l:'Formalizar un manual de crisis para la próxima sequía, con roles y umbrales',c:'Cuesta: poco, y deja intacto lo que hizo necesaria la crisis',e:{amb:1,mot:1,due:1},flag:'manual_crisis',
+     f:'Documentaste la respuesta y dejaste intacto el sistema que la hizo necesaria: el pozo sigue en disputa, los datos cerrados y la ASADA sin fondo. Un manual es un parámetro bien escrito.',k:'Apalancamiento bajo · procedimientos'},
+    {l:'Crear la dirección de sostenibilidad para Valeria, con asiento en la junta',c:'Cuesta: un salario permanente',e:{amb:2,mot:1,due:1,rep:1,eco:-3,bie:1},flag:'valeria_junta',
+     f:'Cambiaste la estructura —quién decide— y eso es apalancamiento medio-alto. Lo que no cambiaste: las reglas del agua con el pueblo ni tu propio ritmo. Buen paso; no es el legado completo.',k:'Apalancamiento medio · estructura de decisión'}]}
+ ],
+ qc:['Con los doce puntos de apalancamiento de Meadows: ¿en qué nivel intervienen la mayoría de las iniciativas de sostenibilidad de las empresas? ¿Cuál sería la intervención de mayor apalancamiento que nadie ha propuesto?','Dell\'Acqua et al. encuentran que la IA mejora las tareas dentro de la «frontera irregular» y empeora las de fuera. ¿Qué partes de una estrategia de sostenibilidad están dentro y cuáles fuera?','Microsoft anuncia «carbono negativo 2030» mientras sus emisiones suben por los centros de datos. ¿Es contradicción, transición o greenwashing? ¿Qué criterio usaron para responder?','Un reporte integrado como el de Philips cuesta millones. ¿Cuál es la versión mínima viable para una empresa mediana, y qué no puede faltar?']}
+];
+
+/* ---- Evento inesperado tras la sesión 6 ---- */
+const OFERTA = {
+ tag:'Evento inesperado · tras la sesión 6',t:'La llamada del Caribe',
+ ctx:'Suena el teléfono: un resort cinco estrellas del Caribe —sin problemas de agua ni de generadores— te ofrece la gerencia general con 40% más de salario. Piden respuesta en 72 horas. Esa noche, Sofía pregunta si este año sí irán de vacaciones.',
+ opts:[
+  {l:'Aceptar: mereces un lugar sin sequías',c:'Cuesta: este hotel, esta comunidad, esta historia',accept:true},
+  {l:'Rechazar de inmediato y no contárselo a nadie',c:'Cuesta: cargar la decisión a solas',e:{bie:-4},
+   f:'Elegiste quedarte, pero cargaste la renuncia en silencio. Las decisiones no conversadas pesan doble.'},
+  {l:'Usar la oferta para renegociar con los dueños: recursos, equipo y descanso',c:'Cuesta: una conversación incómoda',e:{bie:7,eco:3,mot:2,due:1},flag:'apoyo',
+   f:'Convertiste una salida en apalancamiento: el sistema ahora sabe lo que vales, y tú negociaste condiciones para liderar sin quemarte.'},
+  {l:'Tomarte 48 horas: consultarlo con tu familia y tu equipo',c:'Cuesta: dos días de incertidumbre',e:{bie:8,mot:2},flag:'familia',
+   f:'La pausa también es estrategia. Volviste con claridad: tu propósito está aquí, y tu familia dentro del plan, no fuera de él.'}]
+};
+
+/* ================= Chequeo del sistema: crisis, dividendos, finales ================= */
+function systemCheck(){
+  const out=[];
+  /* consecuencias acumuladas de los recortes */
+  for(const k in CUT_EVENTS){
+    for(const ce of CUT_EVENTS[k]){
+      const tag='cut_'+k+'_'+ce.at;
+      if(CUTS[k]>=ce.at && !has(tag)){ FLAGS.add(tag); const dlt=apply(ce.e); out.push({cls:'crisis',t:ce.t+' · recortes en '+CUTAREAS[k].n.toLowerCase(),d:ce.d,chips:dlt}); }
+    }
+  }
+  for(const cf of CUT_FATIGUE){ const tag='cut_fatiga_'+cf.at; if(totalCuts()>=cf.at && !has(tag)){ FLAGS.add(tag); const dlt=apply(cf.e); out.push({cls:'crisis',t:cf.t+' · '+totalCuts()+' recortes',d:cf.d,chips:dlt}); } }
+  for(const d of DIMS){
+    const k=d.k;
+    if(S[k]<50){
+      if(!has('cr_'+k)){
+        FLAGS.add('cr_'+k);
+        const c=CRISIS[k]; let e=c.e, x='';
+        if(c.fn){const r=c.fn(); e=r.e; x=r.x;}
+        const dlt=apply(e);
+        out.push({cls:'crisis',t:c.t+' · '+d.n+' bajo 50',d:c.d+(x?' '+x:''),chips:dlt});
+      } else {
+        apply({[k]:-2});
+        out.push({cls:'bad',t:d.n+' sigue bajo 50',d:'La crisis no se ha resuelto y se agrava: cada mes sin respuesta cuesta más. (−2 '+d.n+')'});
+      }
+    }
+  }
+  for(const d of DIMS){
+    const k=d.k;
+    if(S[k]>=80 && !has('bo_'+k)){
+      FLAGS.add('bo_'+k);
+      const b=BONUS[k]; const dlt=apply(b.e);
+      out.push({cls:'bonus',t:b.t+' · '+d.n+' sobre 80',d:b.d,chips:dlt});
+    }
+  }
+  OVER=overCheck();
+  return out;
+}
+function overCheck(){
+  if(S.eco<30) return 'quiebra';
+  if(S.bie<25) return 'colapso';
+  if(S.com<25) return 'bloqueo';
+  if(S.mot<25) return 'renuncia';
+  if(S.rep<25) return 'marca';
+  if(S.amb<25) return 'clausura';
+  if(S.tur<25) return 'vacio';
+  if(S.due<25) return 'despido';
+  if(DIMS.filter(d=>S[d.k]<50).length>=5) return 'sistemico';
+  return null;
+}
+function eventsHtml(evs){
+  return evs.map(e=>{
+    if(Array.isArray(e)) return `<div class="notice ${e[0]==='bad'?'bad':''}">${e[1]}</div>`;
+    return `<div class="notice ${e.cls}"><b>${e.t}</b>${e.d}${e.chips?chipsHtml(e.chips).replace('class="chips"','class="chips" style="margin-top:.4rem;margin-bottom:0"'):''}</div>`;
+  }).join('');
+}
+
+/* ================= Intro ================= */
+function intro(){
+  reset();
+  document.getElementById('scoreboard').style.display='none';
+  const sv=load();
+  const canResume = sv && sv.S && typeof sv.si==='number' && sv.si<STAGES.length;
+  screen(`
+   <div class="hero">
+     <div class="eyebrow">Simulación de decisiones · Creating Value through Sustainability</div>
+     <h1>Temporada Seca: nueve decisiones</h1>
+     <p>Diriges un hotel boutique sostenible en Guanacaste. Un El Niño fuerte llega en plena temporada alta y, al mismo tiempo, una crisis de combustibles encarece el diésel, los vuelos y la electricidad. Cada etapa corresponde a una sesión del curso. Toda opción cuesta algo; parte del juego es descubrir qué, antes de elegir.</p>
+   </div>
+   <p class="ctx"><b>Tu misión:</b> mantener el hotel abierto y deseable, demostrar con datos que es sostenible, cuidar la relación con la comunidad, sostener a proveedores y tour operadores, proteger a tu equipo, conservar la confianza de los dueños… y no perderte a ti en el intento.</p>
+   <p class="ctx" style="font-size:.85rem">En cada decisión escucharás a tu equipo gerencial —Valeria (Sostenibilidad), Rodrigo (Mercadeo), Marcela (Recursos Humanos), Esteban (Finanzas)—, a los dueños, a los stakeholders de afuera y a tu familia. Rara vez estarán de acuerdo.</p>
+   <div class="dimlist">
+     ${DIMS.map(d=>`<div><span class="ic">${d.ic}</span><span><b>${d.n}.</b> ${d.d}</span></div>`).join('')}
+   </div>
+   <div class="rules">
+     <div class="r1"><b>&lt; 50</b>Zona de crisis: caja en rojo, renuncias, protestas, burnout, expedientes. Si sigue cayendo, el hotel puede quebrar o tú puedes salir del juego.</div>
+     <div class="r2"><b>≥ 80</b>Zona de excelencia: crédito verde, prensa, tarifa premium, un equipo que innova solo. Resultados económicos y sostenibles a la vez.</div>
+    </div>
+    <div class="rules" style="grid-template-columns:1fr">
+     <div class="r1" style="background:var(--tint);color:var(--goldd)"><b>Recortar gasto</b>En cada decisión puedes, además, recortar en un área: mantenimiento, personal, mercadeo o programa ambiental. Mejora la caja hoy; lo que cueste en otras áreas, y cuándo, es parte de lo que el juego te deja descubrir.</div>
+   </div>
+   <p class="ctx" style="font-size:.82rem;color:var(--gray)">Las decisiones de una sesión cambian las opciones y los eventos de las siguientes. Tu avance se guarda en este dispositivo: puedes jugar una etapa por sesión.</p>
+   ${idBoxHtml()}
+   ${canResume?`<button class="btn gold" onclick="resume()">Continuar donde quedé · Etapa ${sv.si+1}</button>
+   <button class="btn ghost" onclick="clearSave();startGame()">Empezar de nuevo</button>`:
+   `<button class="btn gold" onclick="startGame()">Comenzar en la sesión 1</button>`}
+   <p class="ctx" style="font-size:.78rem;color:var(--gray);margin:1rem 0 .2rem"><b>Para el aula:</b> empezar directamente en una sesión (tablero en estado neutro, sin historial).</p>
+   <div class="jump">${STAGES.map(s=>`<button class="${isUnlocked(s.n)?'':'locked'}" onclick="jumpTo(${s.n})" title="Sesión ${s.n}: ${s.ses}${isUnlocked(s.n)?'':' · requiere clave'}">${s.n}</button>`).join('')}</div>
+   ${CONFIG.CLAVES&&Object.keys(CONFIG.CLAVES).length?`<p class="small" style="text-align:left;margin-top:.4rem">Las sesiones con clave se abren con el código que se entrega en clase cada día; una vez abierta, queda disponible en este dispositivo.</p>`:''}
+   <p class="small">Instrumento didáctico para el curso Creating Value through Sustainability · INCAE · JGG</p>`);
+}
+function idBoxHtml(){
+  const id=loadIdentity()||{}; const name=PLAYER.name||id.name||'', group=PLAYER.group||id.group||'';
+  const reg=!!CONFIG.SHEET_ENDPOINT;
+  return `<div class="idbox">
+   <label for="pname">Tu nombre o código de participante${reg?'':' <span style="font-weight:400">(opcional)</span>'}</label>
+   <input id="pname" type="text" maxlength="60" autocomplete="name" value="${name.replace(/"/g,'&quot;')}" placeholder="p. ej., Ana Rojas · MBA 2026">
+   ${CONFIG.GRUPO_FIJO?'':`<label for="pgroup">Grupo o sección <span style="font-weight:400">(opcional)</span></label>
+   <input id="pgroup" type="text" maxlength="40" value="${group.replace(/"/g,'&quot;')}" placeholder="p. ej., Sección A">`}
+   <div class="idnote">${reg?'Tus resultados se registran automáticamente al cerrar cada sesión y al terminar, con tu nombre y tus decisiones.':'Se usa en el resumen que puedes copiar al final.'}</div>
+   <div class="idwarn" id="idwarn">Escribe tu nombre o código para que tus resultados queden registrados.</div>
+  </div>`;
+}
+function readIdentity(){
+  const n=document.getElementById('pname'), g=document.getElementById('pgroup');
+  PLAYER.name=(n?n.value:'').trim(); PLAYER.group=CONFIG.GRUPO_FIJO||(g?g.value:'').trim();
+  if(CONFIG.SHEET_ENDPOINT && !PLAYER.name){ const w=document.getElementById('idwarn'); if(w)w.style.display='block'; if(n)n.focus(); return false; }
+  saveIdentity(); return true;
+}
+function startGame(){ if(!readIdentity())return; reset(); stageIdx=0; stageIntro(); }
+function jumpTo(n){ if(!readIdentity())return; reset(); S={...NEUTRAL}; stageIdx=n-1; PLAYER.modo='sesión '+n; stageIntro(); }
+function resume(){
+  const sv=load(); if(!sv){intro();return;}
+  reset();
+  S={...sv.S}; FLAGS=new Set(sv.F||[]); LOG=sv.LOG||[]; stageIdx=sv.si; decIdx=sv.di||0; CHECK=sv.CHECK||null; CHECK_PREV=sv.CHECK_PREV||null; CUTS=sv.CUTS||{mant:0,pers:0,mkt:0,amb:0}; CUT=null; if(sv.PLAYER) PLAYER={...PLAYER,...sv.PLAYER}; if(!PLAYER.partida) PLAYER.partida=newId();
+  if(sv.phase==='gate') stageIntro();
+  else if(sv.phase==='close') stageClose();
+  else if(sv.phase==='oferta') showOferta();
+  else if(sv.phase==='dec'){ if(decIdx>=STAGES[stageIdx].dec.length) stageClose(); else showDecision(); }
+  else stageIntro();
+}
+
+/* ================= Flujo de etapas ================= */
+function stageIntro(){
+  const st=STAGES[stageIdx];
+  if(!isUnlocked(st.n)){ gateScreen(); return; }
+  CHECK_PREV=CHECK; CHECK=snapshot();
+  renderBoard('Sesión '+st.n+' · '+st.mes);
+  const evs=[...st.evs(), ...systemCheck()];
+  renderBoard('Sesión '+st.n+' · '+st.mes);
+  if(OVER){ gameOver(OVER, CHECK_PREV||CHECK, 'Sesión '+st.n+' · '+st.mes); return; }
+  decIdx=0; save('dec');
+  screen(`
+   <div class="eyebrow">Etapa ${st.n} · ${st.mes}</div>
+   <h2>${st.t}</h2>
+   <div class="sesion"><b>Sesión ${st.n}: ${st.ses}.</b> ${st.marco}</div>
+   <p class="ctx">${st.ctx}</p>
+   ${evs.length?'<h3>Lo que pasó desde la última sesión</h3>':''}
+   ${eventsHtml(evs)}
+   <button class="btn" onclick="decIdx=0;showDecision()">Ver la primera decisión</button>`);
+}
+function gateScreen(){
+  const st=STAGES[stageIdx];
+  renderBoard('Sesión '+st.n+' · acceso');
+  save('gate');
+  screen(`
+   <div class="eyebrow">Etapa ${st.n} · ${st.mes}</div>
+   <h2>${st.t}</h2>
+   <div class="gate">
+     <div class="sesion" style="margin:0 0 .5rem"><b>Sesión ${st.n}: ${st.ses}.</b> Esta etapa se habilita en clase.</div>
+     <label for="gkey" style="font-size:.85rem">Escribe la clave que entrega el docente para la sesión ${st.n}</label>
+     <input id="gkey" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="····" onkeydown="if(event.key==='Enter')tryKey()">
+     <div class="gerr" id="gerr"></div>
+     <button class="btn" onclick="tryKey()">Abrir la sesión ${st.n}</button>
+     <div class="ghint">Tu avance hasta aquí está guardado en este dispositivo. Puedes cerrar y volver cuando tengas la clave.</div>
+   </div>
+   <button class="btn ghost" onclick="intro()">Volver al inicio</button>`);
+  setTimeout(()=>{ const i=document.getElementById('gkey'); if(i) i.focus(); },80);
+}
+function tryKey(){
+  const st=STAGES[stageIdx], i=document.getElementById('gkey'), e=document.getElementById('gerr');
+  if(checkKey(st.n, i?i.value:'')){ markUnlocked(st.n); stageIntro(); return; }
+  if(e){ e.textContent='Clave incorrecta para la sesión '+st.n+'. Revisa con el docente.'; }
+  if(i){ i.value=''; i.focus(); }
+}
+let ORDER=[];
+function shuffled(n){ const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function showDecision(){
+  const st=STAGES[stageIdx], d=st.dec[decIdx];
+  ORDER=shuffled(d.opts.length);
+  renderBoard('Sesión '+st.n+' · '+st.mes);
+  screen(`
+   <div class="eyebrow">Etapa ${st.n} · ${st.mes} · decisión ${decIdx+1} de ${st.dec.length}</div>
+   <div class="qcard">
+     <div class="q">${d.q}</div>
+     ${d.v?'<h3 style="margin-top:0">Lo que oyes en la mesa</h3>':''}
+     ${voicesHtml(d.v)}
+     <h3>¿Qué decides?</h3>
+     ${ORDER.map(i=>`<button class="opt" onclick="choose(${i})"><b>${d.opts[i].l}</b></button>`).join('')}
+     ${cutPanelHtml()}
+   </div>`);
+}
+function cutPanelHtml(){
+  CUT=null;
+  const n=totalCuts();
+  return `<div class="cutbox">
+     <div class="cut-t">Recorte de gasto <span>· opcional, se aplica junto con lo que elijas${n?` · llevas ${n}`:''}</span></div>
+     <div class="cut-d">Esteban lo repite en cada reunión: «siempre hay algo que recortar». Mejora la caja de inmediato; el ahorro se agota si repites el recorte en la misma área, y el área recortada lo resiente, con consecuencias que se acumulan.</div>
+     <div class="cut-chips">
+       <button class="cutc sel" data-cut="" onclick="setCut(null)">Sin recorte</button>
+       ${Object.keys(CUTAREAS).map(k=>`<button class="cutc" data-cut="${k}" onclick="setCut('${k}')">${CUTAREAS[k].n}</button>`).join('')}
+     </div></div>`;
+}
+function setCut(k){
+  CUT=k;
+  document.querySelectorAll('.cutc').forEach(b=>b.classList.toggle('sel',(b.dataset.cut||null)===k));
+}
+function applyCut(){
+  if(!CUT||!CUTAREAS[CUT]) return null;
+  const k=CUT, a=CUTAREAS[k], n=CUTS[k];
+  const gain=CUT_GAIN[Math.min(n,CUT_GAIN.length-1)], m=CUT_MULT(n);
+  CUTS[k]=n+1;
+  const side={}; for(const d in a.e) side[d]=a.e[d]*m;
+  const dlt=apply(gain?{eco:gain, ...side}:side);
+  CUT=null;
+  const r=(gain?a.r:'Ya no queda qué recortar aquí: el ahorro es cero y el daño sigue.')+(m>1?' Cada recorte repetido pega más fuerte que el anterior.':'');
+  return {k, n:a.n, dlt, r, gain};
+}
+function choose(i){
+  const st=STAGES[stageIdx], d=st.dec[decIdx], o=d.opts[i];
+  const delta = apply({...(o.e||{})});
+  const extra = o.mod ? (o.mod()||{}) : {};
+  merge(delta, apply(extra));
+  if(o.flag) (Array.isArray(o.flag)?o.flag:[o.flag]).forEach(f=>FLAGS.add(f));
+  if(o.unflag) FLAGS.delete(o.unflag);
+  let fb = o.fdyn ? o.fdyn() : (o.f||'');
+  if(o.fmod) fb += o.fmod();
+  const cut = applyCut();
+  LOG.push({et:'Sesión '+st.n, q:d.q, l:o.l, cut:cut?cut.n:null});
+  renderBoard('Sesión '+st.n+' · '+st.mes);
+  const last = decIdx>=st.dec.length-1;
+  if(last){ save('close'); } else { decIdx++; save('dec'); decIdx--; }
+  screen(`
+   <div class="eyebrow">Etapa ${st.n} · ${st.mes}</div>
+   <p class="chosen">Elegiste: <b>${o.l}</b>${o.c?`<br><span style="font-style:italic">${o.c}</span>`:''}</p>
+   ${chipsHtml(delta)}
+   ${cut?`<div class="cut-note"><b>Recorte en ${cut.n.toLowerCase()}</b> (${CUTS[cut.k]}.ª vez): ${cut.r}</div>${chipsHtml(cut.dlt)}`:''}
+   <span class="fb-tag">LECTURA DEL CURSO</span>
+   <div class="fb-box">${fb}</div>
+   ${o.k?`<p class="marco"><b>Marco:</b> ${o.k}</p>`:''}
+   <button class="btn" onclick="${last?'stageClose()':'decIdx++;showDecision()'}">${last?'Cerrar la sesión '+st.n:'Siguiente decisión'}</button>`);
+}
+function stageClose(){
+  const st=STAGES[stageIdx];
+  renderBoard('Sesión '+st.n+' · cierre');
+  save('close');
+  if(CONFIG.ENVIAR_POR_ETAPA && !(stageIdx>=STAGES.length-1)) sendRow('cierre_sesion');
+  const lows=DIMS.filter(d=>S[d.k]<50), highs=DIMS.filter(d=>S[d.k]>=80);
+  const isLast = stageIdx>=STAGES.length-1;
+  const oferta = stageIdx===5;
+  screen(`
+   <div class="eyebrow">Cierre de la sesión ${st.n} · ${st.mes}</div>
+   <h2>Así queda el tablero</h2>
+   ${scorebarsHtml()}
+   ${lows.length?`<div class="notice bad"><b>En zona de crisis: ${lows.map(d=>d.n).join(', ')}.</b>Si siguen bajo 50 al empezar la próxima sesión, el sistema reacciona: renuncias, protestas, caja en rojo, burnout.</div>`:''}
+   ${highs.length?`<div class="notice bonus"><b>En zona de excelencia: ${highs.map(d=>d.n).join(', ')}.</b>Sobre 80, el sistema empieza a pagar dividendos.</div>`:''}
+   <div class="qclase"><b>Para discutir en clase · Sesión ${st.n}</b><ol>${(Array.isArray(st.qc)?st.qc:[st.qc]).map(q=>`<li>${q}</li>`).join('')}</ol></div>
+   <p class="ctx" style="font-size:.8rem;color:var(--gray)">Tu avance queda guardado en este dispositivo. Puedes cerrar y volver en la próxima sesión.</p>
+   <button class="btn" onclick="${isLast?'ending()':(oferta?'showOferta()':'nextStage()')}">${isLast?'Ver el resultado del año':(oferta?'Continuar':'Continuar a la sesión '+(st.n+1)+(isUnlocked(st.n+1)?'':' · con la clave del día'))}</button>
+   <button class="btn ghost" onclick="copyResumen(this)">Copiar mi avance</button>`);
+}
+function nextStage(){
+  stageIdx++;
+  if(stageIdx>=STAGES.length){ending();return;}
+  stageIntro();
+}
+
+/* ---- Evento: la oferta ---- */
+function showOferta(){
+  renderBoard('Evento');
+  save('oferta');
+  screen(`
+   <div class="eyebrow">${OFERTA.tag}</div>
+   <h2>${OFERTA.t}</h2>
+   <p class="ctx">${OFERTA.ctx}</p>
+   <div class="qcard">
+     <div class="q">¿Qué respondes?</div>
+     ${OFERTA.opts.map((o,i)=>`<button class="opt" onclick="chooseOferta(${i})"><b>${o.l}</b></button>`).join('')}
+   </div>`);
+}
+function chooseOferta(i){
+  const o=OFERTA.opts[i];
+  if(o.accept){LOG.push({et:'Evento',q:OFERTA.t,l:o.l});endingCaribe();return;}
+  const delta=apply({...o.e});
+  if(o.flag)FLAGS.add(o.flag);
+  LOG.push({et:'Evento',q:OFERTA.t,l:o.l});
+  renderBoard('Evento');
+  screen(`
+   <div class="eyebrow">${OFERTA.tag}</div>
+   <p class="chosen">Elegiste: <b>${o.l}</b><br><span style="font-style:italic">${o.c}</span></p>
+   ${chipsHtml(delta)}
+   <span class="fb-tag">LECTURA DEL CURSO</span>
+   <div class="fb-box">${o.f}</div>
+   <p class="marco"><b>Marco:</b> Sostenibilidad personal · ritmo de decisión</p>
+   <button class="btn" onclick="nextStage()">Seguir en Guanacaste</button>`);
+}
+
+/* ================= Finales ================= */
+function avg(){return Math.round(DIMS.reduce((a,d)=>a+S[d.k],0)/DIMS.length);}
+function nextSeason(){return Math.max(15,Math.min(98,Math.round(S.tur*0.45+S.rep*0.3+S.com*0.25)));}
+function ebitda(){ const p=Math.round((S.eco-60)*0.8+(S.amb-60)*0.25); return (p>0?'+':'')+p+' %'; }
+function cst(){ return S.amb>=80?'Élite':(S.amb>=65?'Avanzado':(S.amb>=50?'Básico':'En riesgo')); }
+function rotacion(){ return S.mot>=80?'Baja':(S.mot>=65?'Normal':(S.mot>=50?'Alta':'Crítica')); }
+function verdict(){
+  const a=avg(), lows=DIMS.filter(d=>S[d.k]<50).length, highs=DIMS.filter(d=>S[d.k]>=80).length;
+  if(lows===0 && highs===DIMS.length) return {cls:'win',t:'Referente regenerativo',
+   d:'Las ocho dimensiones sobre 80. El hotel cierra el año con el mejor margen de su historia, certificación élite, la ASADA como socia, proveedores que crecieron contigo y un equipo dueño del sistema. Los dueños te delegan la estrategia y tu familia te reconoce. INCAE pide escribir el caso.'};
+  if(lows===0 && highs>=6 && a>=80) return {cls:'win',t:'Valor compartido, demostrado',
+   d:'Convertiste la peor sequía en décadas y el diésel más caro en ventaja competitiva: resultados económicos y sostenibles a la vez, con datos que cualquier tercero puede verificar. Quedan una o dos dimensiones por llevar a la zona de excelencia; el sistema ya sabe cómo.'};
+  if(lows===0 && a>=70) return {cls:'mid',t:'Estrategia integrada, en construcción',
+   d:'El hotel termina el año de pie y con estructura: nada quedó bajo 50 y varias decisiones sembraron capacidades. Aún falta que la sostenibilidad cambie más decisiones del negocio y que los resultados lleguen a la zona de excelencia.'};
+  if(lows<=1 && a>=58) return {cls:'mid',t:'Sobrevivió, con cicatrices',
+   d:'El hotel cierra la temporada, pero alguna dimensión quedó en zona de crisis y el sistema lo recuerda. Algunas decisiones costaron caro y dejaron lecciones; otras sembraron estructura. La próxima sequía dirá cuáles pesaron más.'};
+  return {cls:'bad',t:'Temporada perdida',
+   d:'El hotel sobrevive, pero con varias dimensiones en zona de crisis: reseñas duras, comunidad distante, equipo cansado, dueños impacientes o caja exhausta. El próximo año abre cuesta arriba: habrá que reconstruir confianza con hechos.'};
+}
+function lessonsHtml(){
+  const L=[];
+  const ok=(c,t)=>{if(c)L.push(`<div class="ok">✔ ${t}</div>`)};
+  const miss=(c,t)=>{if(c)L.push(`<div class="miss">△ ${t}</div>`)};
+  ok(has('estrategia'),'Sesión 1 · Trataste la sostenibilidad como estrategia: cambió decisiones del negocio, no solo el presupuesto de donaciones.');
+  ok(has('matriz'),'Sesión 2 · Priorizaste con doble materialidad y validación externa: cinco temas con dueño valen más que veinte en consenso.');
+  ok(has('linea_base'),'Sesión 3 · Construiste línea base: cada promesa tuvo denominador, y eso te salvó en la crisis y ante el banco.');
+  ok(has('rediseno')||has('circular'),'Sesión 4 · Rediseñaste el modelo en vez de restringir: la escasez se volvió propuesta de valor y productividad.');
+  ok(has('proveedores')||has('diligencia'),'Sesión 5 · Llevaste la estrategia a la cadena: desarrollo de proveedores y debida diligencia con remediación.');
+  ok(has('solar')&&has('caso_honesto'),'Sesión 6 · Tradujiste sostenibilidad a finanzas con causalidad y sensibilidad, y declaraste la incertidumbre.');
+  ok(has('incentivos')||has('experimento'),'Sesión 7 · Cerraste la brecha de propósito por donde se cierra: incentivos bien diseñados y resistencia procesada como información.');
+  ok(has('asada'),'Sesión 8 · Rompiste la tragedia de los comunes con reglas compartidas: el acuerdo con la ASADA fue tu mejor seguro.');
+  ok(has('datos'),'Sesión 8 · Comunicaste con evidencia: progreso, no perfección. La transparencia convirtió el rumor en conversación.');
+  ok(has('integrado')&&has('ia_validada'),'Sesión 9 · Integraste las piezas en seis capitales y usaste la IA para ampliar opciones sin ceder el juicio.');
+  ok(has('legado'),'Sesión 9 · Interviniste en reglas e información, no solo en parámetros: la próxima crisis encontrará un sistema.');
+  ok(has('guardianes'),'Instalaste capacidades en el equipo: la delegación tuvo dónde apoyarse y el burnout encontró resistencia.');
+  ok(has('apoyo')||has('familia')||has('ritmo'),'Cuidaste tu sostenibilidad personal: negociaste ritmo y apoyo antes de agotarte.');
+  miss(has('green')||has('claim_neutral'),'La comunicación superó a la evidencia en algún momento: el greenwashing cobra intereses, y los cobró.');
+  miss(has('pipas')||has('diesel'),'Resolviste síntomas exportando costos al acuífero, al pueblo o a la caja: pipas y diésel compran tiempo y compran conflicto.');
+  miss(has('despidos')||has('recorte_horas')||has('terceriza'),'Aliviaste la caja rompiendo capacidades y empleos locales: en servicio de alto estándar, la gente es el sistema.');
+  miss(has('gaming'),'Un incentivo mal diseñado produjo gaming: se premió una mejora aislada a costa del huésped.');
+  miss(has('litigio')||has('negacion')||has('fila'),'Trataste a un stakeholder con legitimidad como si no tuviera poder; lo adquirió en una semana.');
+  miss(has('ia_ciega'),'Delegaste el juicio a la IA en la zona de precaución: causalidad y hechos sin validar llegaron a la junta.');
+  miss(!has('asada'),'Sin acuerdo estructural con la comunidad, cada sequía volverá a ser una batalla por el acuífero.');
+  miss(!has('linea_base'),'Sin línea base, la sostenibilidad del hotel siguió siendo una afirmación, no una evidencia.');
+  miss(S.bie<50,'El costo personal fue alto. Un liderazgo que se agota no es sostenible, por definición.');
+  const tc=totalCuts(), maxc=Math.max(...Object.values(CUTS));
+  miss(tc>=8||maxc>=5,`Financiaste la estrategia con recortes (${tc}): el ahorro apareció en la caja y el costo llegó por otras cuentas: mantenimiento, gente, canal o evidencia. Recortar no es una estrategia; es una transferencia con demora.`);
+  ok(tc>0&&tc<=5&&maxc<=2&&S.eco>=70,`Usaste el recorte como puente y no como estrategia: pocas veces (${tc}), repartido, sin romper capacidades.`);
+  ok(tc===0&&S.eco>=80,'Llegaste a la zona de excelencia económica sin recortar: el margen salió de rediseñar, no de apretar.');
+  return L.slice(0,8).join('');
+}
+function scorebarsHtml(){
+  return `<div class="score-final">${DIMS.map(d=>{
+    const v=S[d.k];const col=v<50?'var(--lowc)':(v>=80?'var(--highc)':'var(--midc)');
+    return `<div class="sf-row"><span class="nm">${d.n}</span><div class="bar"><div class="fill" style="width:${v}%;background:${col}"></div></div><span class="val">${v}</span></div>`;}).join('')}</div>`;
+}
+function kpisHtml(){
+  return `<div class="kpis">
+    <div class="kpi"><span>Ocupación proyectada, próxima temporada</span><b>${nextSeason()}%</b></div>
+    <div class="kpi"><span>EBITDA vs. plan</span><b>${ebitda()}</b></div>
+    <div class="kpi"><span>Nivel CST</span><b>${cst()}</b></div>
+    <div class="kpi"><span>Rotación del equipo</span><b>${rotacion()}</b></div>
+  </div>`;
+}
+function logHtml(){
+  const tc=totalCuts();
+  const head=tc?`<div class="notice bad"><b>Recortes de gasto: ${tc}.</b> ${Object.keys(CUTS).filter(k=>CUTS[k]).map(k=>CUTAREAS[k].n+' ×'+CUTS[k]).join(' · ')}</div>`:'';
+  return head+`<ul class="loglist">${LOG.map(l=>`<li><b>${l.et}:</b> ${l.l}${l.cut?` <span style="color:var(--brick);font-size:.78rem">· recorte en ${l.cut.toLowerCase()}</span>`:''}</li>`).join('')}</ul>`;
+}
+function ending(){
+  CHECK_PREV=CHECK; CHECK=snapshot();
+  const evs=systemCheck();
+  renderBoard('Cierre del año');
+  if(OVER){ gameOver(OVER, CHECK, 'Cierre del año'); return; }
+  const v=verdict();
+  if(S.bie<50) v.d += ' Hay una factura aparte: terminaste el año al borde del burnout. El hotel ganó una temporada; tú perdiste meses de energía que nadie contabiliza.';
+  clearSave();
+  screen(`
+   <div class="eyebrow">Resultado del año · Temporada Seca</div>
+   <div class="ending ${v.cls}"><h2>${v.t}</h2><p>${v.d}</p></div>
+   ${evs.length?'<h3>Lo que pasó al cerrar el año</h3>'+eventsHtml(evs):''}
+   ${kpisHtml()}
+   ${scorebarsHtml()}
+   <span class="fb-tag">TUS DECISIONES</span>
+   ${logHtml()}
+   <span class="fb-tag">LECCIONES DEL CURSO</span>
+   <div class="lessons" style="margin-top:.5rem">${lessonsHtml()}</div>
+   <p class="sendstatus" id="sendstatus"></p>
+   <button class="btn gold" onclick="copyResumen(this)">Copiar mi resumen</button>
+   <button class="btn ghost" onclick="intro()">Jugar de nuevo</button>
+   <p class="small">Instrumento didáctico para el curso Creating Value through Sustainability · INCAE · JGG</p>`);
+  sendRow('final');
+}
+function gameOver(type, retry, when){
+  const o=OVERS[type];
+  const lows=DIMS.filter(d=>S[d.k]<50);
+  window._retry=retry;
+  screen(`
+   <div class="eyebrow">Fin de la partida · ${when}</div>
+   <div class="ending bad"><h2>${o.t}</h2><p>${o.d}</p></div>
+   ${lows.length?`<div class="notice bad"><b>Dimensiones bajo 50:</b> ${lows.map(d=>d.n+' ('+S[d.k]+')').join(', ')}.</div>`:''}
+   ${scorebarsHtml()}
+   <span class="fb-tag">TUS DECISIONES</span>
+   ${logHtml()}
+   <span class="fb-tag">LO QUE EL SISTEMA TE DICE</span>
+   <div class="lessons" style="margin-top:.5rem">${lessonsHtml()}</div>
+   <p class="sendstatus" id="sendstatus"></p>
+   ${retry?`<button class="btn gold" onclick="retryStage()">Volver a la etapa ${retry.si+1} y decidir distinto</button>`:''}
+   <button class="btn ghost" onclick="copyResumen(this)">Copiar mi resumen</button>
+   <button class="btn ghost" onclick="clearSave();intro()">Jugar de nuevo</button>
+   <p class="small">Instrumento didáctico para el curso Creating Value through Sustainability · INCAE · JGG</p>`);
+  sendRow('fin_de_juego');
+}
+function retryStage(){
+  const c=window._retry; if(!c){intro();return;}
+  restore(c);
+  CHECK=null; CHECK_PREV=null;
+  stageIntro();
+}
+function endingCaribe(){
+  const solid = has('guardianes') && (has('matriz')||has('linea_base'));
+  apply({rep: solid ? -5 : -10, bie: -3});
+  renderBoard('Final');
+  clearSave();
+  const brandCost = solid ?
+   'En la industria turística —que es pequeña y conversa— la historia que viaja contigo no es solo el nuevo cargo: es que te fuiste en plena sequía (−5 Reputación). La estructura que dejaste suaviza el juicio, pero no lo borra: los liderazgos se recuerdan por cómo se quedan… y por cómo se van.' :
+   'En la industria turística —que es pequeña y conversa— la historia que viaja contigo no es el nuevo cargo: es que abandonaste a un equipo y a una empresa en medio de la crisis (−10 Reputación). Esa etiqueta llega al Caribe antes que tu primera reunión, y también pesa de noche (−3 Bienestar).';
+  const hotelFate = solid ?
+   'El equipo que formaste y la estructura de medición sostuvieron el hotel sin ti: cerró la temporada de pie y te despidieron con gratitud. Lo dejaste mejor de lo que lo encontraste: la marca de un liderazgo que construye sistemas, no dependencias.' :
+   'Sin capacidades instaladas ni estructura, el hotel improvisó el resto de la temporada: reseñas duras, comunidad distante, equipo a la deriva. El sistema que dependía de ti se fue contigo.';
+  screen(`
+   <div class="eyebrow">Final alternativo · La llamada del Caribe</div>
+   <div class="ending ${solid?'mid':'bad'}"><h2>Nueva vida en el Caribe</h2>
+   <p>Aceptaste. En el Caribe sobra el agua y el salario alcanza para las vacaciones que Sofía pedía. ${hotelFate}</p>
+   <p style="margin-top:.5rem"><b>Tu marca personal:</b> ${brandCost}</p>
+   <p style="margin-top:.5rem"><i>La pregunta que viaja contigo: ¿era el agua el problema, o lo que aún no habías construido para liderarla?</i></p></div>
+   ${scorebarsHtml()}
+   <span class="fb-tag">TUS DECISIONES HASTA LA PARTIDA</span>
+   ${logHtml()}
+   <p class="sendstatus" id="sendstatus"></p>
+   <button class="btn gold" onclick="copyResumen(this)">Copiar mi resumen</button>
+   <button class="btn ghost" onclick="intro()">Jugar de nuevo</button>
+   <p class="small">Instrumento didáctico para el curso Creating Value through Sustainability · INCAE · JGG</p>`);
+  sendRow('caribe');
+}
+function copyResumen(btn){
+  let t='TEMPORADA SECA · Nueve decisiones · Mi tablero\n';
+  if(PLAYER.name) t+=`Participante: ${PLAYER.name}${PLAYER.group?' · '+PLAYER.group:''}\n`;
+  t+=DIMS.map(d=>`${d.n}: ${S[d.k]}`).join(' · ')+'\n';
+  t+=`Promedio: ${avg()} · Ocupación próxima temporada: ${nextSeason()}% · EBITDA vs. plan: ${ebitda()} · CST: ${cst()}\n`;
+  if(OVER) t+=`Fin de la partida: ${OVERS[OVER].t}\n`;
+  else if(stageIdx>=STAGES.length-1 && LOG.length>=24) t+=`Resultado: ${verdict().t}\n`;
+  const tc=totalCuts(); if(tc) t+=`Recortes de gasto: ${tc} (${Object.keys(CUTS).filter(k=>CUTS[k]).map(k=>CUTAREAS[k].n+' ×'+CUTS[k]).join(', ')})\n`;
+  t+='\nDecisiones:\n'+LOG.map(l=>`- ${l.et}: ${l.l}${l.cut?' [recorte: '+l.cut+']':''}`).join('\n');
+  const done=()=>{const old=btn.textContent;btn.textContent='Copiado ✓';setTimeout(()=>btn.textContent=old,1800)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>{fb(t);done();});}
+  else{fb(t);done();}
+  function fb(x){const ta=document.createElement('textarea');ta.value=x;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);}
+}
+
+intro();
+</script>
+<!-- JGG -->
+</body>
+</html>
